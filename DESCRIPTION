@@ -1,0 +1,19 @@
+Package: harp
+Title: harp
+Version: 0.0.0.9000
+Authors@R: as.person(c(
+    "Andrew Singleton <andrewts@met.no> [aut, cre]", 
+    "Alex Deckmyn <alex.deckmyn@meteo.be> [aut]"
+  ))
+Description: Attaches all harp packages
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    harpIO,
+    harpPoint,
+    harpVis
+Remotes: 
+    andrew-MET/harpIO,
+    andrew-MET/harpPoint,
+    andrew-MET/harpVis
