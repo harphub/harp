@@ -17,3 +17,5 @@ Remotes:
     andrew-MET/harpIO,
     andrew-MET/harpPoint,
     andrew-MET/harpVis
+URL: https://github.com/andrew-MET/harp
+BugReports: https://github.com/andrew-MET/harp/issues
