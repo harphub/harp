@@ -12,10 +12,12 @@ LazyData: true
 Depends: 
     harpIO,
     harpPoint,
-    harpVis
+    harpVis,
+    harpSpatial
 Remotes: 
     andrew-MET/harpIO,
     andrew-MET/harpPoint,
-    andrew-MET/harpVis
+    andrew-MET/harpVis,
+    adeckmyn/harpSpatial
 URL: https://github.com/andrew-MET/harp
 BugReports: https://github.com/andrew-MET/harp/issues
