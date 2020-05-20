@@ -6,7 +6,7 @@ Authors@R: as.person(c(
     "Alex Deckmyn <alex.deckmyn@meteo.be> [aut]"
   ))
 Description: Attaches all harp packages
-License: MIT + file LICENSE
+License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 Depends: 
@@ -21,3 +21,7 @@ Remotes:
     adeckmyn/harpSpatial
 URL: https://github.com/andrew-MET/harp
 BugReports: https://github.com/andrew-MET/harp/issues
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
