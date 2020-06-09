@@ -32,7 +32,15 @@ remotes::install_github("andrew-MET/harp")
 ```
 
 ### System libraries
-The [harpIO](https://andrew-met.github.io/harpIO) and [harpSpatial](https://andrew-met.github.io/harpSpatial) packages use the [meteogrid](https://github.com/adeckmyn/meteogrid) package for interpolation and the geogrid class for storing gridded data. This package makes use of the [PROJ4](https://proj4.org) library for handling projections. If you have the PROJ libraries installed in a standard location (e.g. /usr/local) meteogrid will install without problems. However, if the PROJ libraries are in a non standard location, you need to tell the install function where they are:
+The [harpIO](https://andrew-met.github.io/harpIO) and [harpSpatial](https://andrew-met.github.io/harpSpatial) packages use the [meteogrid](https://github.com/adeckmyn/meteogrid) package for interpolation and the geogrid class for storing gridded data. This package makes use of the [PROJ4](https://proj4.org) library for handling projections. If oyou do not have PROJ4 installed you can install with:
+
+```{bash eval=FALSE}
+sudo apt-get install libproj-dev
+```
+
+If you do not have sudo rights, speak to your system administrator. 
+
+If you have the PROJ libraries installed in a standard location (e.g. /usr/local) meteogrid will install without problems. However, if the PROJ libraries are in a non standard location, you need to tell the install function where they are:
 ```{r eval=FALSE}
 remotes::install_github(
   "andrew-MET/harpIO",
@@ -40,7 +48,6 @@ remotes::install_github(
     meteogrid = "--with-proj=/path/to/proj"
   )
 )
-
 ```
 
 Alternatively you can set environment variables
