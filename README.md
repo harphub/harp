@@ -31,7 +31,7 @@ The [harpIO](https://andrew-met.github.io/harpIO) and
 [meteogrid](https://github.com/adeckmyn/meteogrid) package for
 interpolation and the geogrid class for storing gridded data. This
 package makes use of the [PROJ4](https://proj4.org) library for handling
-projections. If oyou do not have PROJ4 installed you can install with:
+projections. If you do not have PROJ4 installed you can install with:
 
 ``` bash
 sudo apt-get install libproj-dev
