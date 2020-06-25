@@ -38,7 +38,7 @@ We will first go over how to compute the data for a single parameter, in this ca
 
 If you don't already have the harpData package install it with:
 ```{r harpData, eval=FALSE}
-remotes::install_github("andrew-MET/harpData")
+remotes::install_github("harphub/harpData")
 ```
 
 Note that harpData contains close to 1GB of data so may take some time to download. 

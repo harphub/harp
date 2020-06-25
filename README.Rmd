@@ -21,18 +21,18 @@ knitr::opts_chunk$set(
 # harp <a href=#><img src='man/figures/harp_logo_dark.svg' align="right" height="131.5" style="margin-left:30px" /></a>
 
 
-__harp__ is a meta-package that attaches functionality from the [harpIO](https://andrew-met.github.io/harpIO), [harpPoint](https://andrew-met.github.io/harpPoint) and [harpSpatial](https://andrew-met.github.io/harpSpatial) packages to your session.  
+__harp__ is a meta-package that attaches functionality from the [harpIO](https://harphub.github.io/harpIO), [harpPoint](https://harphub.github.io/harpPoint) and [harpSpatial](https://harphub.github.io/harpSpatial) packages to your session.  
 
 ## Installation
 ```{r eval=FALSE}
 if (!require("remotes")) {
   install.packages("remotes")
 }
-remotes::install_github("andrew-MET/harp")
+remotes::install_github("harphub/harp")
 ```
 
 ### System libraries
-The [harpIO](https://andrew-met.github.io/harpIO) and [harpSpatial](https://andrew-met.github.io/harpSpatial) packages use the [meteogrid](https://github.com/adeckmyn/meteogrid) package for interpolation and the geogrid class for storing gridded data. This package makes use of the [PROJ4](https://proj4.org) library for handling projections. If you do not have PROJ4 installed you can install with:
+The [harpIO](https://harphub.github.io/harpIO) and [harpSpatial](https://harphub.github.io/harpSpatial) packages use the [meteogrid](https://github.com/harphub/meteogrid) package for interpolation and the geogrid class for storing gridded data. This package makes use of the [PROJ4](https://proj4.org) library for handling projections. If you do not have PROJ4 installed you can install with:
 
 ```{bash eval=FALSE}
 sudo apt-get install libproj-dev
@@ -43,7 +43,7 @@ If you do not have sudo rights, speak to your system administrator.
 If you have the PROJ libraries installed in a standard location (e.g. /usr/local) meteogrid will install without problems. However, if the PROJ libraries are in a non standard location, you need to tell the install function where they are:
 ```{r eval=FALSE}
 remotes::install_github(
-  "andrew-MET/harpIO",
+  "harphub/harpIO",
   configure.args = c(
     meteogrid = "--with-proj=/path/to/proj"
   )
