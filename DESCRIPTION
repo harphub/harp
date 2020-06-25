@@ -15,12 +15,12 @@ Depends:
     harpVis,
     harpSpatial
 Remotes: 
-    andrew-MET/harpIO,
-    andrew-MET/harpPoint,
-    andrew-MET/harpVis,
-    adeckmyn/harpSpatial
-URL: https://github.com/andrew-MET/harp
-BugReports: https://github.com/andrew-MET/harp/issues
+    harphub/harpIO,
+    harphub/harpPoint,
+    harphub/harpVis,
+    harphub/harpSpatial
+URL: https://github.com/harphub/harp
+BugReports: https://github.com/harphub/harp/issues
 Suggests: 
     knitr,
     rmarkdown
