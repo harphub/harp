@@ -24,6 +24,16 @@ if (!require("remotes")) {
 remotes::install_github("harphub/harp")
 ```
 
+### Installing on ecgate
+
+Before installing on ecgate you need to load the proj4 and R modules
+before starting R and executing the above:
+
+``` bash
+module load proj4
+module load R
+```
+
 ### System libraries
 
 The [harpIO](https://harphub.github.io/harpIO) and
@@ -56,7 +66,7 @@ remotes::install_github(
 Alternatively you can set environment variables
 
 ``` bash
-export PROJ=/path/to/proj
+export PROJ4_DIR=/path/to/proj
 ```
 
 If you include these environment variables in your .bashrc file, or

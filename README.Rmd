@@ -31,6 +31,14 @@ if (!require("remotes")) {
 remotes::install_github("harphub/harp")
 ```
 
+### Installing on ecgate
+Before installing on ecgate you need to load the proj4 and R modules before starting R and executing the above:
+```{bash eval=FALSE}
+module load proj4
+module load R
+```
+
+
 ### System libraries
 The [harpIO](https://harphub.github.io/harpIO) and [harpSpatial](https://harphub.github.io/harpSpatial) packages use the [meteogrid](https://github.com/harphub/meteogrid) package for interpolation and the geogrid class for storing gridded data. This package makes use of the [PROJ4](https://proj4.org) library for handling projections. If you do not have PROJ4 installed you can install with:
 
@@ -52,7 +60,7 @@ remotes::install_github(
 
 Alternatively you can set environment variables
 ```{bash eval=FALSE}
-export PROJ=/path/to/proj
+export PROJ4_DIR=/path/to/proj
 ```
 
 If you include these environment variables in your .bashrc file, or equivalent, you won't need to worry about it when you wish to install an update to meteogrid.
