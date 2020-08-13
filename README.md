@@ -113,3 +113,10 @@ this wont be an issue soon.
 The purpose of this website is to demonstrate common workflows, such as
 point and spatial verification, score card generation, and data analysis
 using the **harp** packages.
+
+## harp book
+
+An online [book](https://harphub.github.io/harp_tutorial) that collects
+together tutorials on how to use harp is currently being worked on. Feel
+free to make suggestions, or to contribute by filing issues or pull
+requests [here](https://github.com/harphub/harp_tutorial)
