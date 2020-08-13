@@ -87,6 +87,27 @@ When setting environment variables or creating a Makevars file, R must
 be restarted for the changes to take effect before running
 `remotes::install_github("andrew_MET/harp")`.
 
+### A note about harpSpatial
+
+harpSpatial imports a package (SpatialVx) that depends on a package that
+depends on another package (conquer) that requires an R version of 3.6
+or newer. If you don’t need to use harpSpatial you can install the other
+harp packages individually, and when you’re working you will also need
+to attach them individually:
+
+``` r
+remotes::install_github("harphub/harpIO")
+remotes::install_github("harphub/harpPoint")
+remotes::install_github("harphub/harpVis")
+
+library(harpIO)
+library(harpPoint)
+library(harpVis)
+```
+
+We are working on removing the dependency on SpatialVx, so hopefully
+this wont be an issue soon.
+
 ## Workflows
 
 The purpose of this website is to demonstrate common workflows, such as
