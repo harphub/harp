@@ -89,20 +89,19 @@ be restarted for the changes to take effect before running
 
 ### A note about harpSpatial
 
-harpSpatial imports a package (SpatialVx) that depends on a package that
-depends on another package (conquer) that requires an R version of 3.6
-or newer. If you don’t need to use harpSpatial you can install the other
-harp packages individually, and when you’re working you will also need
-to attach them individually:
+harpSpatial imports the package
+[SpatialVx](https://cran.r-project.org/package=SpatialVx) that has a
+dependency tree that depends on the package
+[conquer](https://cran.r-project.org/package=conquer), which requires R
+version \>= 3.6. For this reason harpSpatial is not part of the harp
+meta-package and currently needs to be installed and attached
+separately:
 
 ``` r
-remotes::install_github("harphub/harpIO")
-remotes::install_github("harphub/harpPoint")
-remotes::install_github("harphub/harpVis")
+remotes::install_github("harphub/harpSpatial")
 
-library(harpIO)
-library(harpPoint)
-library(harpVis)
+library(harp)
+library(harpSpatial)
 ```
 
 We are working on removing the dependency on SpatialVx, so hopefully

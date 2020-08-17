@@ -122,14 +122,11 @@
 <div id="a-note-about-harpspatial" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-note-about-harpspatial" class="anchor"></a>A note about harpSpatial</h3>
-<p>harpSpatial imports a package (SpatialVx) that depends on a package that depends on another package (conquer) that requires an R version of 3.6 or newer. If you don’t need to use harpSpatial you can install the other harp packages individually, and when you’re working you will also need to attach them individually:</p>
-<div class="sourceCode" id="cb7"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"harphub/harpIO"</span>)
-<span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"harphub/harpPoint"</span>)
-<span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"harphub/harpVis"</span>)
+<p>harpSpatial imports the package <a href="https://cran.r-project.org/package=SpatialVx">SpatialVx</a> that has a dependency tree that depends on the package <a href="https://cran.r-project.org/package=conquer">conquer</a>, which requires R version &gt;= 3.6. For this reason harpSpatial is not part of the harp meta-package and currently needs to be installed and attached separately:</p>
+<div class="sourceCode" id="cb7"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"harphub/harpSpatial"</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harpIO</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harpPoint</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harpVis</span>)</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harp</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harpSpatial</span>)</pre></div>
 <p>We are working on removing the dependency on SpatialVx, so hopefully this wont be an issue soon.</p>
 </div>
 </div>
