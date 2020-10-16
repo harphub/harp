@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">harp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9027</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9030</span>
       </span>
     </div>
 
@@ -92,7 +92,7 @@
 <div id="what-is-a-score-card" class="section level2">
 <h2 class="hasAnchor">
 <a href="#what-is-a-score-card" class="anchor"></a>What is a score card?</h2>
-<p>Score cards provide a quick overview of the performance of one forecast model compared with another. It shows which model has better performance for a range of scores and statisical significance of those differences. The statisitcal significance is computed by pooling the data by, for example, forecast date, and computing the score for each pool and then sampling from those pools, with replacement, to compute a mean score. This process is repeated <em>n</em> times using a <em>bootstrap</em> method, and the difference between the forecast models for each mean score is calculated for each of the <em>n</em> bootstrap replicates. The proportion of the scores that are better for one model than another gives the confidence of the difference. The example below shows a score card comparing many parameters for a range of scores for two forecast models, named “Model A” and “Model B”.</p>
+<p>Score cards provide a quick overview of the performance of one forecast model compared with another. It shows which model has better performance for a range of scores and statistical significance of those differences. The statistical significance is computed by pooling the data by, for example, forecast date, and computing the score for each pool and then sampling from those pools, with replacement, to compute a mean score. This process is repeated <em>n</em> times using a <em>bootstrap</em> method, and the difference between the forecast models for each mean score is calculated for each of the <em>n</em> bootstrap replicates. The proportion of the scores that are better for one model than another gives the confidence of the difference. The example below shows a score card comparing many parameters for a range of scores for two forecast models, named “Model A” and “Model B”.</p>
 <p><img src="../man/figures/example_scorecard.png" width="100%"></p>
 </div>
 <div id="score-card-generation" class="section level2">
@@ -170,16 +170,16 @@
 #&gt; # A tibble: 34 x 18
 #&gt;    mname leadtime num_cases_lower bias_lower rmse_lower mae_lower stde_lower
 #&gt;    &lt;chr&gt;    &lt;dbl&gt;           &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
-#&gt;  1 AROM…        0            3.55     0.0340      0.736     0.580      NA   
-#&gt;  2 AROM…        3            3.86     0.0279      1.51      1.25        1.47
-#&gt;  3 AROM…        6            3.52     0.157       1.62      1.34       NA   
-#&gt;  4 AROM…        9            3.90     0.198       1.78      1.48        1.50
-#&gt;  5 AROM…       12            3.52     0.262       1.82      1.53       NA   
-#&gt;  6 AROM…       15            3.85     0.338       1.87      1.55        1.50
-#&gt;  7 AROM…       18            3.53     0.382       1.87      1.55       NA   
-#&gt;  8 AROM…       21            3.85     0.150       1.83      1.48        1.51
-#&gt;  9 AROM…       24            3.47     0.137       1.78      1.43       NA   
-#&gt; 10 AROM…       27            3.85     0.187       1.57      1.29        1.21
+#&gt;  1 AROM…        0            3.52    0.0254       0.721     0.569      NA   
+#&gt;  2 AROM…        3            3.84    0.00346      1.50      1.22        1.35
+#&gt;  3 AROM…        6            3.49    0.123        1.60      1.32       NA   
+#&gt;  4 AROM…        9            3.89    0.147        1.76      1.45        1.49
+#&gt;  5 AROM…       12            3.51    0.160        1.78      1.50       NA   
+#&gt;  6 AROM…       15            3.85    0.278        1.84      1.52        1.51
+#&gt;  7 AROM…       18            3.50    0.279        1.85      1.55       NA   
+#&gt;  8 AROM…       21            3.84    0.0733       1.79      1.47        1.55
+#&gt;  9 AROM…       24            3.47    0.0403       1.76      1.41       NA   
+#&gt; 10 AROM…       27            3.86    0.0857       1.55      1.28        1.22
 #&gt; # … with 24 more rows, and 11 more variables: num_cases_upper &lt;dbl&gt;,
 #&gt; #   bias_upper &lt;dbl&gt;, rmse_upper &lt;dbl&gt;, mae_upper &lt;dbl&gt;, stde_upper &lt;dbl&gt;,
 #&gt; #   num_cases &lt;int&gt;, bias &lt;dbl&gt;, rmse &lt;dbl&gt;, mae &lt;dbl&gt;, stde &lt;dbl&gt;,
@@ -189,7 +189,7 @@
 #&gt; # A tibble: 152 x 12
 #&gt;    fcst_model leadtime score ref_model pc_diff symbol     y   value    diff
 #&gt;    &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-#&gt;  1 AROME_Arc…        0 bias  MEPS_prod    0.9  .          1   0.125  0.0210
+#&gt;  1 AROME_Arc…        0 bias  MEPS_prod    0.87 .          1   0.125  0.0210
 #&gt;  2 AROME_Arc…        0 mae   MEPS_prod   -1    -          1   0.654 -0.321 
 #&gt;  3 AROME_Arc…        0 num_… MEPS_prod    0    .          1 627      0     
 #&gt;  4 AROME_Arc…        0 rmse  MEPS_prod   -1    -          1   1.02  -0.396 
@@ -197,8 +197,8 @@
 #&gt;  6 AROME_Arc…        3 mae   MEPS_prod    1    +          1   1.35   0.0907
 #&gt;  7 AROME_Arc…        3 num_… MEPS_prod    0    .          1 678      0     
 #&gt;  8 AROME_Arc…        3 rmse  MEPS_prod    1    +          1   2.03   0.138 
-#&gt;  9 AROME_Arc…        3 stde  MEPS_prod   -0.98 -          1   2.02   0.155 
-#&gt; 10 AROME_Arc…        6 bias  MEPS_prod   -0.84 .          1   0.344 -0.0411
+#&gt;  9 AROME_Arc…        3 stde  MEPS_prod   -0.93 .          1   2.02   0.155 
+#&gt; 10 AROME_Arc…        6 bias  MEPS_prod   -0.79 .          1   0.344 -0.0411
 #&gt; # … with 142 more rows, and 3 more variables: ref_value &lt;dbl&gt;, better &lt;dbl&gt;,
 #&gt; #   parameter &lt;chr&gt;</code></pre>
 <p>The score card will eventually be plotted from information in the “confidence of differences” data frame in the result. You don’t really need to be familiar with the content of the data frame, except to note that ‘fcst_model’ and ‘ref_model’ are column names and we will want to choose values from those columns when we come to plot the data.</p>
