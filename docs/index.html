@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">harp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9028</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9030</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#harp-" class="anchor"></a>harp <a href="#"><img src="reference/figures/harp_logo_dark.svg" align="right" height="131.5" style="margin-left:30px"></a>
 </h1></div>
-<p><strong>harp</strong> is a meta-package that attaches functionality from the <a href="https://harphub.github.io/harpIO">harpIO</a>, <a href="https://harphub.github.io/harpPoint">harpPoint</a> and <a href="https://harphub.github.io/harpSpatial">harpSpatial</a> packages to your session.</p>
+<p>{<em>harp</em>} is a meta-package that attaches functionality from the <a href="https://harphub.github.io/harpIO">{<em>harpIO</em>}</a>, <a href="https://harphub.github.io/harpPoint">{<em>harpPoint</em>}</a>, <a href="https://harphub.github.io/harpVis"><em>{harpVis</em>}</a> and <a href="https://harphub.github.io/harpSpatial">{<em>harpSpatial</em>}</a> packages to your session.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -96,44 +96,36 @@
 <p>Before installing on ecgate you need to load the proj4 and R modules before starting R and executing the above:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">module</span> load proj4</span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="ex">module</span> load R</span></code></pre></div>
+<p>ecgate also seems to have an issue with the {<em>systemfonts</em>} package that helps to provide a wide choice of fonts for plots. This can be alleviated by installing an older version of {<em>systemfonts</em>} before attempting to install {<em>harp</em>} using <code><a href="https://remotes.r-lib.org/reference/install_version.html">remotes::install_version</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_version.html">install_version</a></span>(<span class="st">"systemfonts"</span>, <span class="st">"0.2.3"</span>)</pre></div>
 </div>
 <div id="system-libraries" class="section level3">
 <h3 class="hasAnchor">
 <a href="#system-libraries" class="anchor"></a>System libraries</h3>
-<p>The <a href="https://harphub.github.io/harpIO">harpIO</a> and <a href="https://harphub.github.io/harpSpatial">harpSpatial</a> packages use the <a href="https://github.com/harphub/meteogrid">meteogrid</a> package for interpolation and the geogrid class for storing gridded data. This package makes use of the <a href="https://proj4.org">PROJ4</a> library for handling projections. If you do not have PROJ4 installed you can install with:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">sudo</span> apt-get install libproj-dev</span></code></pre></div>
-<p>If you do not have sudo rights, speak to your system administrator.</p>
-<p>If you have the PROJ libraries installed in a standard location (e.g. /usr/local) meteogrid will install without problems. However, if the PROJ libraries are in a non standard location, you need to tell the install function where they are:</p>
-<div class="sourceCode" id="cb4"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(
+<p>The <a href="https://harphub.github.io/harpIO">{<em>harpIO</em>}</a> and <a href="https://harphub.github.io/harpSpatial">{<em>harpSpatial</em>}</a> packages use the <a href="https://github.com/harphub/meteogrid">{<em>meteogrid</em>}</a> package for interpolation and the geogrid class for storing gridded data. This package makes use of the <a href="https://proj4.org">PROJ4</a> library for handling projections. If you do not have PROJ4 installed you can install with:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">sudo</span> apt-get install libproj-dev</span></code></pre></div>
+<p>If you do not have sudo rights, try installing a user local version, or speak to your system administrator.</p>
+<p>If you have the PROJ4 libraries installed in a standard location (e.g. /usr/local) {<em>meteogrid</em>} will install without problems. However, if the PROJ4 libraries are in a non standard location, you need to tell the install function where they are:</p>
+<div class="sourceCode" id="cb5"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(
   <span class="st">"harphub/harpIO"</span>,
   <span class="kw">configure.args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
     <span class="kw">meteogrid</span> <span class="kw">=</span> <span class="st">"--with-proj=/path/to/proj"</span>
   )
 )</pre></div>
 <p>Alternatively you can set environment variables</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="bu">export</span> <span class="va">PROJ4_DIR=</span>/path/to/proj</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="bu">export</span> <span class="va">PROJ4_DIR=</span>/path/to/proj</span></code></pre></div>
 <p>If you include these environment variables in your .bashrc file, or equivalent, you won’t need to worry about it when you wish to install an update to meteogrid.</p>
 <p>Or you can set compiler and linker options in the file $HOME/.R/Makevars</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="va">CPPFLAGS=</span>-I/path/to/proj/include</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="va">LDFLAGS=</span>-L/path/to/proj/lib <span class="ex">-Wl</span>,-rpath,/path/to/proj/lib</span></code></pre></div>
-<p>In this case you only have to set them once and not worry about it when you wish to install an update to meteogrid.</p>
-<p>When setting environment variables or creating a Makevars file, R must be restarted for the changes to take effect before running <code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("andrew_MET/harp")</a></code>.</p>
-</div>
-<div id="a-note-about-harpspatial" class="section level3">
-<h3 class="hasAnchor">
-<a href="#a-note-about-harpspatial" class="anchor"></a>A note about harpSpatial</h3>
-<p>harpSpatial imports the package <a href="https://cran.r-project.org/package=SpatialVx">SpatialVx</a> that has a dependency tree that depends on the package <a href="https://cran.r-project.org/package=conquer">conquer</a>, which requires R version &gt;= 3.6. For this reason harpSpatial is not part of the harp meta-package and currently needs to be installed and attached separately:</p>
-<div class="sourceCode" id="cb7"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"harphub/harpSpatial"</span>)
-
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harp</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harpSpatial</span>)</pre></div>
-<p>We are working on removing the dependency on SpatialVx, so hopefully this wont be an issue soon.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="va">CPPFLAGS=</span>-I/path/to/proj/include</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="va">LDFLAGS=</span>-L/path/to/proj/lib <span class="ex">-Wl</span>,-rpath,/path/to/proj/lib</span></code></pre></div>
+<p>In this case you only have to set them once and not worry about it when you wish to install an update to {<em>meteogrid</em>}.</p>
+<p>When setting environment variables or creating a Makevars file, R must be restarted for the changes to take effect before running <code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("harphub/harp")</a></code>.</p>
 </div>
 </div>
 <div id="workflows" class="section level2">
 <h2 class="hasAnchor">
 <a href="#workflows" class="anchor"></a>Workflows</h2>
-<p>The purpose of this website is to demonstrate common workflows, such as point and spatial verification, score card generation, and data analysis using the <strong>harp</strong> packages.</p>
+<p>The purpose of this website is to demonstrate common workflows, such as point and spatial verification, score card generation, and data analysis using the {<em>harp</em>} packages.</p>
 </div>
 <div id="harp-book" class="section level2">
 <h2 class="hasAnchor">

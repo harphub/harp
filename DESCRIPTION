@@ -1,6 +1,6 @@
 Package: harp
 Title: harp
-Version: 0.0.0.9029
+Version: 0.0.0.9030
 Authors@R: as.person(c(
     "Andrew Singleton <andrewts@met.no> [aut, cre]", 
     "Alex Deckmyn <alex.deckmyn@meteo.be> [aut]"
@@ -12,7 +12,8 @@ LazyData: true
 Depends: 
     harpIO,
     harpPoint,
-    harpVis
+    harpVis,
+    harpSpatial
 Remotes: 
     harphub/harpIO,
     harphub/harpPoint,
@@ -22,6 +23,5 @@ URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
 Suggests: 
     knitr,
-    rmarkdown,
-    harpSpatial
+    rmarkdown
 VignetteBuilder: knitr
