@@ -96,8 +96,9 @@
 <p>Before installing on ecgate you need to load the proj4 and R modules before starting R and executing the above:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">module</span> load proj4</span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="ex">module</span> load R</span></code></pre></div>
-<p>ecgate also seems to have an issue with the {<em>systemfonts</em>} package that helps to provide a wide choice of fonts for plots. This can be alleviated by installing an older version of {<em>systemfonts</em>} before attempting to install {<em>harp</em>} using <code><a href="https://remotes.r-lib.org/reference/install_version.html">remotes::install_version</a></code>:</p>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_version.html">install_version</a></span>(<span class="st">"systemfonts"</span>, <span class="st">"0.2.3"</span>)</pre></div>
+<p>ecgate also seems to have an issue with the {<em>RSQLite</em>} package that provides functionality for reading from and writing to SQLite files. This can be alleviated by installing an older version of {<em>RSQLite</em>} before attempting to install {<em>harp</em>} using <code><a href="https://remotes.r-lib.org/reference/install_version.html">remotes::install_version</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_version.html">install_version</a></span>(<span class="st">"RSQLite"</span>, <span class="st">"2.2.5"</span>)</pre></div>
+<p>You may be asked if you want to update versions of certain packages. In general it is best to answer with the number that corresponds to All. However, when {<em>harpIO</em>} begins to install, you need to input the numbers (separated by spaces) for all packages excluding RSQLite.</p>
 </div>
 <div id="system-libraries" class="section level3">
 <h3 class="hasAnchor">
