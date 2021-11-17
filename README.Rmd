@@ -4,12 +4,6 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<style>
-  body{
-    text-align: justify;
-  }
-</style>
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -38,7 +32,7 @@ module load proj4
 module load R
 ```
 
-ecgate also seems to have an issue with the {_RSQLite_} package that provides functionality for reading from and writing to SQLite files. This can be alleviated by installing an older version of {_RSQLite_} before attempting to install {_harp_} using `remotes::install_version`:
+ecgate has had an issue with the {_RSQLite_} package that provides functionality for reading from and writing to SQLite files. If you experience problems with RSQLite during installation, this can be alleviated by installing an older version of {_RSQLite_} before attempting to install {_harp_} using `remotes::install_version`:
 ```{r eval=FALSE}
 remotes::install_version("RSQLite", "2.2.5")
 ```
