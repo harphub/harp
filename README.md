@@ -1,12 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<style>
-  body{
-    text-align: justify;
-  }
-</style>
-
 # harp <a href=#><img src='man/figures/harp_logo_dark.svg' align="right" height="131.5" style="margin-left:30px" /></a>
 
 {*harp*} is a meta-package that attaches functionality from the
@@ -35,10 +29,11 @@ module load proj4
 module load R
 ```
 
-ecgate also seems to have an issue with the {*RSQLite*} package that
-provides functionality for reading from and writing to SQLite files.
-This can be alleviated by installing an older version of {*RSQLite*}
-before attempting to install {*harp*} using `remotes::install_version`:
+ecgate has had an issue with the {*RSQLite*} package that provides
+functionality for reading from and writing to SQLite files. If you
+experience problems with RSQLite during installation, this can be
+alleviated by installing an older version of {*RSQLite*} before
+attempting to install {*harp*} using `remotes::install_version`:
 
 ``` r
 remotes::install_version("RSQLite", "2.2.5")
