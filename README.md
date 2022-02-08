@@ -29,21 +29,6 @@ module load proj4
 module load R
 ```
 
-ecgate has had an issue with the {*RSQLite*} package that provides
-functionality for reading from and writing to SQLite files. If you
-experience problems with RSQLite during installation, this can be
-alleviated by installing an older version of {*RSQLite*} before
-attempting to install {*harp*} using `remotes::install_version`:
-
-``` r
-remotes::install_version("RSQLite", "2.2.5")
-```
-
-You may be asked if you want to update versions of certain packages. In
-general it is best to answer with the number that corresponds to All.
-However, when {*harpIO*} begins to install, you need to input the
-numbers (separated by spaces) for all packages excluding RSQLite.
-
 ### System libraries
 
 The [{*harpIO*}](https://harphub.github.io/harpIO) and
