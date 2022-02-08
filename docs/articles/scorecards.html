@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">harp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9030</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9034</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -61,8 +57,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/harphub/harp/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/harphub/harp/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -82,22 +78,22 @@
       <h1 data-toc-skip>Score card generation</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/harphub/harp/blob/master/vignettes/scorecards.Rmd"><code>vignettes/scorecards.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/harphub/harp/blob/HEAD/vignettes/scorecards.Rmd" class="external-link"><code>vignettes/scorecards.Rmd</code></a></small>
       <div class="hidden name"><code>scorecards.Rmd</code></div>
 
     </div>
 
     
     
-<div id="what-is-a-score-card" class="section level2">
-<h2 class="hasAnchor">
-<a href="#what-is-a-score-card" class="anchor"></a>What is a score card?</h2>
+<div class="section level2">
+<h2 id="what-is-a-score-card">What is a score card?<a class="anchor" aria-label="anchor" href="#what-is-a-score-card"></a>
+</h2>
 <p>Score cards provide a quick overview of the performance of one forecast model compared with another. It shows which model has better performance for a range of scores and statistical significance of those differences. The statistical significance is computed by pooling the data by, for example, forecast date, and computing the score for each pool and then sampling from those pools, with replacement, to compute a mean score. This process is repeated <em>n</em> times using a <em>bootstrap</em> method, and the difference between the forecast models for each mean score is calculated for each of the <em>n</em> bootstrap replicates. The proportion of the scores that are better for one model than another gives the confidence of the difference. The example below shows a score card comparing many parameters for a range of scores for two forecast models, named “Model A” and “Model B”.</p>
-<p><img src="../man/figures/example_scorecard.png" width="100%"></p>
+<p><img src="../reference/figures/example_scorecard.png" width="100%"></p>
 </div>
-<div id="score-card-generation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#score-card-generation" class="anchor"></a>Score card generation</h2>
+<div class="section level2">
+<h2 id="score-card-generation">Score card generation<a class="anchor" aria-label="anchor" href="#score-card-generation"></a>
+</h2>
 <p>The process for generating a score card involves several steps:</p>
 <ul>
 <li>Reading the forecast data</li>
@@ -109,199 +105,205 @@
 <p>These steps are repeated for each parameter and then the results can be joined together into a single object and the score card plotted.</p>
 <p>We will first go over how to compute the data for a single parameter, in this case 2m temperature, which in harp is “T2m”. We will use data from the MEPS_prod and AROME_Arctic_prod deterministic models that are in the harpData package. Since these data only include one forecast, we will pool the scores by observation station.</p>
 <p>If you don’t already have the harpData package install it with:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"harphub/harpData"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"harphub/harpData"</span><span class="op">)</span></code></pre></div>
 <p>Note that harpData contains close to 1GB of data so may take some time to download.</p>
 <p>Now we can begin the score card generation…</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">harp</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/harphub/harp" class="external-link">harp</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: harpIO</span>
 <span class="co">#&gt; Loading required package: harpPoint</span>
 <span class="co">#&gt; Loading required package: harpVis</span>
 <span class="co">#&gt; Loading required package: ggplot2</span>
 <span class="co">#&gt; Loading required package: shiny</span>
-<span class="co">#&gt; Loading required package: harpSpatial</span>
-<span class="co">#&gt; Loading required package: meteogrid</span></pre></body></html></div>
-<div class="sourceCode" id="cb3"><html><body><pre class="r">
-<span class="no">param</span> <span class="kw">&lt;-</span> <span class="st">"T2m"</span>
+<span class="co">#&gt; Loading required package: harpSpatial</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">param</span> <span class="op">&lt;-</span> <span class="st">"T2m"</span>
 
 <span class="co"># Read the forecast data</span>
-<span class="no">fcst</span> <span class="kw">&lt;-</span> <span class="fu">read_point_forecast</span>(
-  <span class="kw">start_date</span> <span class="kw">=</span> <span class="fl">2019021700</span>,
-  <span class="kw">end_date</span>   <span class="kw">=</span> <span class="fl">2019021718</span>,
-  <span class="kw">fcst_model</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AROME_Arctic_prod"</span>, <span class="st">"MEPS_prod"</span>),
-  <span class="kw">fcst_type</span>  <span class="kw">=</span> <span class="st">"det"</span>,
-  <span class="kw">parameter</span>  <span class="kw">=</span> <span class="no">param</span>,
-  <span class="kw">by</span>         <span class="kw">=</span> <span class="st">"6h"</span>,
-  <span class="kw">file_path</span>  <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"FCTABLE/deterministic"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"harpData"</span>)
-)
+<span class="va">fcst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpIO/man/read_point_forecast.html" class="external-link">read_point_forecast</a></span><span class="op">(</span>
+  start_date <span class="op">=</span> <span class="fl">2019021700</span>,
+  end_date   <span class="op">=</span> <span class="fl">2019021718</span>,
+  fcst_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AROME_Arctic_prod"</span>, <span class="st">"MEPS_prod"</span><span class="op">)</span>,
+  fcst_type  <span class="op">=</span> <span class="st">"det"</span>,
+  parameter  <span class="op">=</span> <span class="va">param</span>,
+  by         <span class="op">=</span> <span class="st">"6h"</span>,
+  file_path  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"FCTABLE/deterministic"</span>, package <span class="op">=</span> <span class="st">"harpData"</span><span class="op">)</span>
+<span class="op">)</span>
 
 <span class="co"># Select the common cases</span>
-<span class="no">fcst</span> <span class="kw">&lt;-</span> <span class="fu">common_cases</span>(<span class="no">fcst</span>)
+<span class="va">fcst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/common_cases.html" class="external-link">common_cases</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>
 
 <span class="co"># Pull the station IDs from fcst so we don't read too many observations</span>
-<span class="no">stations</span> <span class="kw">&lt;-</span> <span class="fu">pull_stations</span>(<span class="no">fcst</span>)
+<span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/pull_stations.html" class="external-link">pull_stations</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>
 
 <span class="co"># Read the observations</span>
-<span class="no">obs</span> <span class="kw">&lt;-</span> <span class="fu">read_point_obs</span>(
-  <span class="fu">first_validdate</span>(<span class="no">fcst</span>),
-  <span class="fu">last_validdate</span>(<span class="no">fcst</span>),
-  <span class="no">param</span>,
-  <span class="kw">obs_path</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"OBSTABLE"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"harpData"</span>),
-  <span class="kw">stations</span> <span class="kw">=</span> <span class="no">stations</span>
-)
+<span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpIO/man/read_point_obs.html" class="external-link">read_point_obs</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">first_validdate</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/last_validdate.html" class="external-link">last_validdate</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>,
+  <span class="va">param</span>, 
+  obs_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"OBSTABLE"</span>, package <span class="op">=</span> <span class="st">"harpData"</span><span class="op">)</span>,
+  stations <span class="op">=</span> <span class="va">stations</span>
+<span class="op">)</span>
 
 <span class="co"># Join the observations to the forecast</span>
-<span class="no">fcst</span> <span class="kw">&lt;-</span> <span class="fu">join_to_fcst</span>(<span class="no">fcst</span>, <span class="no">obs</span>)
+<span class="va">fcst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/join_to_fcst.html" class="external-link">join_to_fcst</a></span><span class="op">(</span><span class="va">fcst</span>, <span class="va">obs</span><span class="op">)</span>
 
 <span class="co"># Bootstrap the score. Since we use the parameter argument to select the </span>
 <span class="co"># parameter column in the data, we need to tell the function to use the </span>
 <span class="co"># param variable as a column name rather than a variable. We do this by</span>
 <span class="co"># wrapping in double curly brackets.</span>
 
-<span class="no">result</span> <span class="kw">&lt;-</span> <span class="fu">pooled_bootstrap_score</span>(
-  <span class="no">fcst</span>,
-  <span class="no">det_verify</span>,         <span class="co"># the function we want to use in the verification</span>
-  {{<span class="no">param</span>}},
-  <span class="kw">n</span>         <span class="kw">=</span> <span class="fl">100</span>,     <span class="co"># the number of bootstrap replicates</span>
-  <span class="kw">pooled_by</span> <span class="kw">=</span> <span class="st">"SID"</span>
-)
+<span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/pooled_bootstrap_score.html" class="external-link">pooled_bootstrap_score</a></span><span class="op">(</span>
+  <span class="va">fcst</span>, 
+  <span class="va">det_verify</span>,         <span class="co"># the function we want to use in the verification</span>
+  <span class="op">{</span><span class="op">{</span><span class="va">param</span><span class="op">}</span><span class="op">}</span>,
+  n         <span class="op">=</span> <span class="fl">100</span>,     <span class="co"># the number of bootstrap replicates</span>
+  pooled_by <span class="op">=</span> <span class="st">"SID"</span>
+<span class="op">)</span>
 
-<span class="no">result</span></pre></body></html></div>
-<pre><code>#&gt; ◌ confidence_limits
-#&gt; # A tibble: 34 x 18
-#&gt;    mname leadtime num_cases_lower bias_lower rmse_lower mae_lower stde_lower
-#&gt;    &lt;chr&gt;    &lt;dbl&gt;           &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
-#&gt;  1 AROM…        0            3.52    0.0254       0.721     0.569      NA   
-#&gt;  2 AROM…        3            3.84    0.00346      1.50      1.22        1.35
-#&gt;  3 AROM…        6            3.49    0.123        1.60      1.32       NA   
-#&gt;  4 AROM…        9            3.89    0.147        1.76      1.45        1.49
-#&gt;  5 AROM…       12            3.51    0.160        1.78      1.50       NA   
-#&gt;  6 AROM…       15            3.85    0.278        1.84      1.52        1.51
-#&gt;  7 AROM…       18            3.50    0.279        1.85      1.55       NA   
-#&gt;  8 AROM…       21            3.84    0.0733       1.79      1.47        1.55
-#&gt;  9 AROM…       24            3.47    0.0403       1.76      1.41       NA   
-#&gt; 10 AROM…       27            3.86    0.0857       1.55      1.28        1.22
-#&gt; # … with 24 more rows, and 11 more variables: num_cases_upper &lt;dbl&gt;,
-#&gt; #   bias_upper &lt;dbl&gt;, rmse_upper &lt;dbl&gt;, mae_upper &lt;dbl&gt;, stde_upper &lt;dbl&gt;,
-#&gt; #   num_cases &lt;int&gt;, bias &lt;dbl&gt;, rmse &lt;dbl&gt;, mae &lt;dbl&gt;, stde &lt;dbl&gt;,
-#&gt; #   parameter &lt;chr&gt;
-#&gt; 
-#&gt; ◌ confidence_of_differences
-#&gt; # A tibble: 152 x 12
-#&gt;    fcst_model leadtime score ref_model pc_diff symbol     y   value    diff
-#&gt;    &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-#&gt;  1 AROME_Arc…        0 bias  MEPS_prod    0.87 .          1   0.125  0.0210
-#&gt;  2 AROME_Arc…        0 mae   MEPS_prod   -1    -          1   0.654 -0.321 
-#&gt;  3 AROME_Arc…        0 num_… MEPS_prod    0    .          1 627      0     
-#&gt;  4 AROME_Arc…        0 rmse  MEPS_prod   -1    -          1   1.02  -0.396 
-#&gt;  5 AROME_Arc…        3 bias  MEPS_prod   -1    -          1   0.249 -0.0981
-#&gt;  6 AROME_Arc…        3 mae   MEPS_prod    1    +          1   1.35   0.0907
-#&gt;  7 AROME_Arc…        3 num_… MEPS_prod    0    .          1 678      0     
-#&gt;  8 AROME_Arc…        3 rmse  MEPS_prod    1    +          1   2.03   0.138 
-#&gt;  9 AROME_Arc…        3 stde  MEPS_prod   -0.93 .          1   2.02   0.155 
-#&gt; 10 AROME_Arc…        6 bias  MEPS_prod   -0.79 .          1   0.344 -0.0411
-#&gt; # … with 142 more rows, and 3 more variables: ref_value &lt;dbl&gt;, better &lt;dbl&gt;,
-#&gt; #   parameter &lt;chr&gt;</code></pre>
+<span class="va">result</span></code></pre></div>
+<pre><code><span class="co">#&gt; <span style="color: #5F5F87;">◌</span> <span style="color: #5F5F87;">confidence_limits</span></span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 34 × 18</span></span>
+<span class="co">#&gt;    mname     leadtime num_cases_lower bias_lower rmse_lower mae_lower stde_lower</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> AROME_Ar…        0            3.58   0.043<span style="text-decoration: underline;">9</span>        0.740     0.592      <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> AROME_Ar…        3            3.86   0.000<span style="text-decoration: underline;">683</span>      1.53      1.26        1.40</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> AROME_Ar…        6            3.54   0.155         1.64      1.35       <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> AROME_Ar…        9            3.87   0.168         1.76      1.46        1.42</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> AROME_Ar…       12            3.56   0.237         1.81      1.51       <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> AROME_Ar…       15            3.84   0.332         1.82      1.52        1.47</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> AROME_Ar…       18            3.56   0.358         1.86      1.56       <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> AROME_Ar…       21            3.83   0.160         1.80      1.46        1.52</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> AROME_Ar…       24            3.51   0.143         1.76      1.43       <span style="color: #BB0000;">NA</span>   </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> AROME_Ar…       27            3.85   0.153         1.56      1.28        1.22</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 24 more rows, and 11 more variables: num_cases_upper &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   bias_upper &lt;dbl&gt;, rmse_upper &lt;dbl&gt;, mae_upper &lt;dbl&gt;, stde_upper &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   num_cases &lt;int&gt;, bias &lt;dbl&gt;, rmse &lt;dbl&gt;, mae &lt;dbl&gt;, stde &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   parameter &lt;chr&gt;</span></span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #5F5F87;">◌</span> <span style="color: #5F5F87;">confidence_of_differences</span></span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 152 × 12</span></span>
+<span class="co">#&gt;    fcst_model     leadtime score  ref_model pc_diff symbol     y   value    diff</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> AROME_Arctic_…        0 bias   MEPS_prod    0.85 .          1   0.125  0.021<span style="text-decoration: underline;">0</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> AROME_Arctic_…        0 mae    MEPS_prod   -<span style="color: #BB0000;">1</span>    -          1   0.654 -<span style="color: #BB0000;">0.321</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> AROME_Arctic_…        0 num_c… MEPS_prod    0    .          1 627      0     </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> AROME_Arctic_…        0 rmse   MEPS_prod   -<span style="color: #BB0000;">1</span>    -          1   1.02  -<span style="color: #BB0000;">0.396</span> </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> AROME_Arctic_…        3 bias   MEPS_prod   -<span style="color: #BB0000;">1</span>    -          1   0.249 -<span style="color: #BB0000;">0.098</span><span style="color: #BB0000; text-decoration: underline;">1</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> AROME_Arctic_…        3 mae    MEPS_prod    1    +          1   1.35   0.090<span style="text-decoration: underline;">7</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> AROME_Arctic_…        3 num_c… MEPS_prod    0    .          1 678      0     </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> AROME_Arctic_…        3 rmse   MEPS_prod    1    +          1   2.03   0.138 </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> AROME_Arctic_…        3 stde   MEPS_prod   -<span style="color: #BB0000;">0.9</span>  .          1   2.02   0.155 </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> AROME_Arctic_…        6 bias   MEPS_prod   -<span style="color: #BB0000;">0.87</span> .          1   0.344 -<span style="color: #BB0000;">0.041</span><span style="color: #BB0000; text-decoration: underline;">1</span></span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 142 more rows, and 3 more variables: ref_value &lt;dbl&gt;, better &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   parameter &lt;chr&gt;</span></span></code></pre>
 <p>The score card will eventually be plotted from information in the “confidence of differences” data frame in the result. You don’t really need to be familiar with the content of the data frame, except to note that ‘fcst_model’ and ‘ref_model’ are column names and we will want to choose values from those columns when we come to plot the data.</p>
-<div id="multiple-parameters" class="section level3">
-<h3 class="hasAnchor">
-<a href="#multiple-parameters" class="anchor"></a>Multiple parameters</h3>
+<div class="section level3">
+<h3 id="multiple-parameters">Multiple parameters<a class="anchor" aria-label="anchor" href="#multiple-parameters"></a>
+</h3>
 <p>Now that we have computed the data for one parameter, how should we do it for multiple parameters? We could write a for loop around the above code, but that isn’t all that flexible. It would be preferable to turn the above into a function so that we can reuse it and use R’s <code>lapply</code> function to apply our new function to multiple parameters. Let’s start with making a function, being sure to not hard code anything - we will need arguments for the start and end dates (<code>start_date</code> and <code>end_date</code>), the frequency of the forecasts (<code>by</code>), the names of the forecast models (<code>fcst_model</code>), the forecast type (whether they are ensemble forecasts or deterministic: <code>fcst_type</code>), the paths to the forecasts and observations (<code>fcst_path</code> and <code>obs_path</code>), the number of bootstrap replicates to do (<code>n</code>), what to pool the scores by (<code>pooled_by</code>), and of course the parameter (<code>param</code>). Since we have such a small amount of data in this example we need to set the minimum number of cases to something small (<code>min_cases</code>) to ensure that the function runs. We will also add a groupings argument, with the default value “leadtime”, which we will use in a later example.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">scorecard_function</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(
-  <span class="no">param</span>,
-  <span class="no">start_date</span>,
-  <span class="no">end_date</span>,
-  <span class="no">by</span>,
-  <span class="no">fcst_model</span>,
-  <span class="no">fcst_type</span>,
-  <span class="no">fcst_path</span>,
-  <span class="no">obs_path</span>,
-  <span class="no">n</span>,
-  <span class="no">pooled_by</span>,
-  <span class="no">min_cases</span>,
-  <span class="no">groupings</span> <span class="kw">=</span> <span class="st">"leadtime"</span>
-) {
-
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scorecard_function</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span>
+  <span class="va">param</span>,
+  <span class="va">start_date</span>,
+  <span class="va">end_date</span>,
+  <span class="va">by</span>,
+  <span class="va">fcst_model</span>,
+  <span class="va">fcst_type</span>, 
+  <span class="va">fcst_path</span>,
+  <span class="va">obs_path</span>, 
+  <span class="va">n</span>, 
+  <span class="va">pooled_by</span>,
+  <span class="va">min_cases</span>,
+  <span class="va">groupings</span> <span class="op">=</span> <span class="st">"leadtime"</span>
+<span class="op">)</span> <span class="op">{</span>
+  
   <span class="co"># Output some information to the user</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span>(<span class="st">"\n"</span>)
-  <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span>(<span class="st">"Generating scorecard data for "</span>, <span class="no">param</span>)
-  <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span>(<span class="st">"=============================="</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">"="</span>, <span class="fu"><a href="https://rdrr.io/r/base/nchar.html">nchar</a></span>(<span class="no">param</span>)), <span class="st">"\n"</span>)
-
-  <span class="no">fcst</span> <span class="kw">&lt;-</span> <span class="fu">read_point_forecast</span>(
-    <span class="kw">start_date</span> <span class="kw">=</span> <span class="no">start_date</span>,
-    <span class="kw">end_date</span>   <span class="kw">=</span> <span class="no">end_date</span>,
-    <span class="kw">fcst_model</span> <span class="kw">=</span> <span class="no">fcst_model</span>,
-    <span class="kw">fcst_type</span>  <span class="kw">=</span> <span class="no">fcst_type</span>,
-    <span class="kw">parameter</span>  <span class="kw">=</span> <span class="no">param</span>,
-    <span class="kw">by</span>         <span class="kw">=</span> <span class="no">by</span>,
-    <span class="kw">file_path</span>  <span class="kw">=</span> <span class="no">fcst_path</span>
-  )
-
-  <span class="no">fcst</span> <span class="kw">&lt;-</span> <span class="fu">common_cases</span>(<span class="no">fcst</span>)
-
-  <span class="no">stations</span> <span class="kw">&lt;-</span> <span class="fu">pull_stations</span>(<span class="no">fcst</span>)
-
-  <span class="no">obs</span> <span class="kw">&lt;-</span> <span class="fu">read_point_obs</span>(
-    <span class="kw">start_date</span> <span class="kw">=</span> <span class="fu">first_validdate</span>(<span class="no">fcst</span>),
-    <span class="kw">end_date</span>   <span class="kw">=</span> <span class="fu">last_validdate</span>(<span class="no">fcst</span>),
-    <span class="kw">parameter</span>  <span class="kw">=</span> <span class="no">param</span>,
-    <span class="kw">obs_path</span>   <span class="kw">=</span> <span class="no">obs_path</span>,
-    <span class="kw">stations</span>   <span class="kw">=</span> <span class="no">stations</span>
-  )
-
+  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Generating scorecard data for "</span>, <span class="va">param</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"=============================="</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"="</span>, <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">param</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span>  
+  
+  <span class="va">fcst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpIO/man/read_point_forecast.html" class="external-link">read_point_forecast</a></span><span class="op">(</span>
+    start_date <span class="op">=</span> <span class="va">start_date</span>,
+    end_date   <span class="op">=</span> <span class="va">end_date</span>,
+    fcst_model <span class="op">=</span> <span class="va">fcst_model</span>,
+    fcst_type  <span class="op">=</span> <span class="va">fcst_type</span>,
+    parameter  <span class="op">=</span> <span class="va">param</span>,
+    by         <span class="op">=</span> <span class="va">by</span>,
+    file_path  <span class="op">=</span> <span class="va">fcst_path</span>
+  <span class="op">)</span>
+  
+  <span class="va">fcst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/common_cases.html" class="external-link">common_cases</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>
+  
+  <span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/pull_stations.html" class="external-link">pull_stations</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>
+  
+  <span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpIO/man/read_point_obs.html" class="external-link">read_point_obs</a></span><span class="op">(</span>
+    start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">first_validdate</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>,
+    end_date   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/last_validdate.html" class="external-link">last_validdate</a></span><span class="op">(</span><span class="va">fcst</span><span class="op">)</span>,
+    parameter  <span class="op">=</span> <span class="va">param</span>, 
+    obs_path   <span class="op">=</span> <span class="va">obs_path</span>,
+    stations   <span class="op">=</span> <span class="va">stations</span>
+  <span class="op">)</span>
+  
   <span class="co"># If no obervations were found return NULL</span>
-  <span class="kw">if</span> (<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">obs</span>) <span class="kw">&lt;</span> <span class="fl">1</span>) <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="kw">NULL</span>)
-
-  <span class="no">fcst</span> <span class="kw">&lt;-</span> <span class="fu">join_to_fcst</span>(<span class="no">fcst</span>, <span class="no">obs</span>)
-
-  <span class="kw">if</span> (<span class="no">fcst_type</span> <span class="kw">==</span> <span class="st">"det"</span>) {
-    <span class="fu">pooled_bootstrap_score</span>(
-      <span class="no">fcst</span>,
-      <span class="no">det_verify</span>,
-      {{<span class="no">param</span>}},
-      <span class="kw">n</span>         <span class="kw">=</span> <span class="no">n</span>,
-      <span class="kw">pooled_by</span> <span class="kw">=</span> <span class="no">pooled_by</span>,
-      <span class="kw">min_cases</span> <span class="kw">=</span> <span class="no">min_cases</span>,
-      <span class="kw">groupings</span> <span class="kw">=</span> <span class="no">groupings</span>
-    )
-  } <span class="kw">else</span> {
-    <span class="fu">pooled_bootstrap_score</span>(
-      <span class="no">fcst</span>,
-      <span class="no">ens_verify</span>,
-      {{<span class="no">param</span>}},
-      <span class="kw">n</span>         <span class="kw">=</span> <span class="no">n</span>,
-      <span class="kw">pooled_by</span> <span class="kw">=</span> <span class="no">pooled_by</span>,
-      <span class="kw">min_cases</span> <span class="kw">=</span> <span class="no">min_cases</span>,
-      <span class="kw">groupings</span> <span class="kw">=</span> <span class="no">groupings</span>
-    )
-  }
-
-}</pre></body></html></div>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span>
+  
+  <span class="va">fcst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/join_to_fcst.html" class="external-link">join_to_fcst</a></span><span class="op">(</span><span class="va">fcst</span>, <span class="va">obs</span><span class="op">)</span>
+  
+  <span class="kw">if</span> <span class="op">(</span><span class="va">fcst_type</span> <span class="op">==</span> <span class="st">"det"</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/pooled_bootstrap_score.html" class="external-link">pooled_bootstrap_score</a></span><span class="op">(</span>
+      <span class="va">fcst</span>, 
+      <span class="va">det_verify</span>,        
+      <span class="op">{</span><span class="op">{</span><span class="va">param</span><span class="op">}</span><span class="op">}</span>,
+      n         <span class="op">=</span> <span class="va">n</span>,     
+      pooled_by <span class="op">=</span> <span class="va">pooled_by</span>,
+      min_cases <span class="op">=</span> <span class="va">min_cases</span>, 
+      groupings <span class="op">=</span> <span class="va">groupings</span>
+    <span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/pooled_bootstrap_score.html" class="external-link">pooled_bootstrap_score</a></span><span class="op">(</span>
+      <span class="va">fcst</span>, 
+      <span class="va">ens_verify</span>,        
+      <span class="op">{</span><span class="op">{</span><span class="va">param</span><span class="op">}</span><span class="op">}</span>,
+      n         <span class="op">=</span> <span class="va">n</span>,     
+      pooled_by <span class="op">=</span> <span class="va">pooled_by</span>,
+      min_cases <span class="op">=</span> <span class="va">min_cases</span>, 
+      groupings <span class="op">=</span> <span class="va">groupings</span>
+    <span class="op">)</span>
+  <span class="op">}</span>
+  
+<span class="op">}</span></code></pre></div>
 <p>Now we have our function we can call if for multiple parameters using <code>lapply</code></p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">parameters</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"T2m"</span>, <span class="st">"S10m"</span>, <span class="st">"T850"</span>, <span class="st">"T700"</span>, <span class="st">"T500"</span>, <span class="st">"Td850"</span>, <span class="st">"Td700"</span>, <span class="st">"Td500"</span>)
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"T2m"</span>, <span class="st">"S10m"</span>, <span class="st">"T850"</span>, <span class="st">"T700"</span>, <span class="st">"T500"</span>, <span class="st">"Td850"</span>, <span class="st">"Td700"</span>, <span class="st">"Td500"</span><span class="op">)</span>
 
-<span class="no">scorecard_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(
-  <span class="no">parameters</span>,
-  <span class="no">scorecard_function</span>,
-  <span class="kw">start_date</span> <span class="kw">=</span> <span class="fl">2019021700</span>,
-  <span class="kw">end_date</span>   <span class="kw">=</span> <span class="fl">2019021718</span>,
-  <span class="kw">by</span>         <span class="kw">=</span> <span class="st">"6h"</span>,
-  <span class="kw">fcst_model</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AROME_Arctic_prod"</span>, <span class="st">"MEPS_prod"</span>),
-  <span class="kw">fcst_type</span>  <span class="kw">=</span> <span class="st">"det"</span>,
-  <span class="kw">fcst_path</span>  <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"FCTABLE/deterministic"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"harpData"</span>),
-  <span class="kw">obs_path</span>   <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"OBSTABLE"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"harpData"</span>),
-  <span class="kw">n</span>          <span class="kw">=</span> <span class="fl">100</span>,
-  <span class="kw">pooled_by</span>  <span class="kw">=</span> <span class="st">"SID"</span>,
-  <span class="kw">min_cases</span>  <span class="kw">=</span> <span class="fl">5</span>
-)</pre></body></html></div>
-<p>The output in <code>scorecard_data</code> is a list, with one element for each parameter. Before we can plot the score card, we need to bind all of those elements into a single element using <code><a href="https://rdrr.io/pkg/harpPoint/man/bind_bootstrap_score.html">harpPoint::bind_bootstrap_score</a></code>.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">scorecard_data</span> <span class="kw">&lt;-</span> <span class="fu">bind_bootstrap_score</span>(<span class="no">scorecard_data</span>)</pre></body></html></div>
-<p>Now we can plot the score card using <code><a href="https://rdrr.io/pkg/harpVis/man/plot_scorecard.html">harpVis::plot_scorecard</a></code>. We need to tell the function which model we want to assess and which model to use as the reference. We also need to tell the function which scores we want to include in the score card.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu">plot_scorecard</span>(
-  <span class="no">scorecard_data</span>,
-  <span class="kw">fcst_model</span> <span class="kw">=</span> <span class="st">"AROME_Arctic_prod"</span>,
-  <span class="kw">ref_model</span>  <span class="kw">=</span> <span class="st">"MEPS_prod"</span>,
-  <span class="kw">scores</span>     <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"rmse"</span>, <span class="st">"mae"</span>, <span class="st">"bias"</span>)
-)</pre></body></html></div>
+<span class="va">scorecard_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span>
+  <span class="va">parameters</span>, 
+  <span class="va">scorecard_function</span>,
+  start_date <span class="op">=</span> <span class="fl">2019021700</span>,
+  end_date   <span class="op">=</span> <span class="fl">2019021718</span>,
+  by         <span class="op">=</span> <span class="st">"6h"</span>,
+  fcst_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AROME_Arctic_prod"</span>, <span class="st">"MEPS_prod"</span><span class="op">)</span>,
+  fcst_type  <span class="op">=</span> <span class="st">"det"</span>,
+  fcst_path  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"FCTABLE/deterministic"</span>, package <span class="op">=</span> <span class="st">"harpData"</span><span class="op">)</span>,
+  obs_path   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"OBSTABLE"</span>, package <span class="op">=</span> <span class="st">"harpData"</span><span class="op">)</span>, 
+  n          <span class="op">=</span> <span class="fl">100</span>, 
+  pooled_by  <span class="op">=</span> <span class="st">"SID"</span>,
+  min_cases  <span class="op">=</span> <span class="fl">5</span>
+<span class="op">)</span></code></pre></div>
+<p>The output in <code>scorecard_data</code> is a list, with one element for each parameter. Before we can plot the score card, we need to bind all of those elements into a single element using <code><a href="https://rdrr.io/pkg/harpPoint/man/bind_bootstrap_score.html" class="external-link">harpPoint::bind_bootstrap_score</a></code>.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scorecard_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harpPoint/man/bind_bootstrap_score.html" class="external-link">bind_bootstrap_score</a></span><span class="op">(</span><span class="va">scorecard_data</span><span class="op">)</span></code></pre></div>
+<p>Now we can plot the score card using <code><a href="https://rdrr.io/pkg/harpVis/man/plot_scorecard.html" class="external-link">harpVis::plot_scorecard</a></code>. We need to tell the function which model we want to assess and which model to use as the reference. We also need to tell the function which scores we want to include in the score card.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/harpVis/man/plot_scorecard.html" class="external-link">plot_scorecard</a></span><span class="op">(</span>
+  <span class="va">scorecard_data</span>, 
+  fcst_model <span class="op">=</span> <span class="st">"AROME_Arctic_prod"</span>, 
+  ref_model  <span class="op">=</span> <span class="st">"MEPS_prod"</span>, 
+  scores     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rmse"</span>, <span class="st">"mae"</span>, <span class="st">"bias"</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
 <p><img src="scorecards_files/figure-html/plot_sc_run-1.png" width="768" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -318,11 +320,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Andrew Singleton, Alex Deckmyn.</p>
+  <p></p>
+<p>Developed by Andrew Singleton, Alex Deckmyn.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -330,6 +334,8 @@
 
   
 
+
+  
 
   </body>
 </html>
