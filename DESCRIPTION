@@ -15,9 +15,9 @@ Depends:
     harpVis,
     harpSpatial
 Remotes: 
-    harphub/harpIO,
+    andrew-met/harpIO@develop,
     harphub/harpPoint,
-    harphub/harpVis,
+    andrew-met/harpVis@gg_geofield,
     harphub/harpSpatial
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
