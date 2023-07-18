@@ -10,12 +10,14 @@ License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 Depends: 
+    harpCore,
     harpIO,
     harpPoint,
     harpVis,
     harpSpatial
 Remotes: 
-    andrew-met/harpIO@develop,
+    harphub/harpCore,
+    harphub/harpIO@develop,
     harphub/harpPoint@develop,
     andrew-met/harpVis@gg_geofield,
     harphub/harpSpatial
