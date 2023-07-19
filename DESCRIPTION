@@ -19,7 +19,7 @@ Remotes:
     harphub/harpCore,
     harphub/harpIO@develop,
     harphub/harpPoint@develop,
-    andrew-met/harpVis@gg_geofield,
+    harphub/harpVis@develop,
     harphub/harpSpatial
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
