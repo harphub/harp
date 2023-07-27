@@ -20,7 +20,7 @@ Remotes:
     harphub/harpIO@develop,
     harphub/harpPoint@develop,
     harphub/harpVis@develop,
-    harphub/harpSpatial
+    harphub/harpSpatial@develop
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
 Suggests: 
