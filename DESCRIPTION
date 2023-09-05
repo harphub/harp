@@ -16,7 +16,7 @@ Depends:
     harpVis (>= 0.1.1),
     harpSpatial
 Remotes: 
-    harphub/harpCore,
+    harphub/harpCore@develop,
     harphub/harpIO@develop,
     harphub/harpPoint@develop,
     harphub/harpVis@develop,
