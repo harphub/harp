@@ -28,3 +28,31 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
+Package: harp
+Title: harp
+Version: 0.0.9
+Authors@R: as.person(c(
+    "Andrew Singleton <andrewts@met.no> [aut, cre]", 
+    "Alex Deckmyn <alex.deckmyn@meteo.be> [aut]"
+  ))
+Description: Attaches all harp packages
+License: Apache License (>= 2.0)
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    harpIO (>= 0.0.9),
+    harpPoint (>= 0.0.9),
+    harpVis (>= 0.0.9),
+    harpSpatial
+Remotes: 
+    harphub/harpIO@0.0.9,
+    harphub/harpPoint@0.0.9,
+    harphub/harpVis@0.0.9,
+    harphub/harpSpatial
+URL: https://github.com/harphub/harp
+BugReports: https://github.com/harphub/harp/issues
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.1.2
