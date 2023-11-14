@@ -17,7 +17,7 @@ Depends:
 Remotes: 
     harphub/harpIO@v0.2.0,
     harphub/harpPoint@v0.2.0,
-    harphub/harpVis@0v0.2.0,
+    harphub/harpVis@v0.2.0,
     harphub/harpSpatial
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
