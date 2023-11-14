@@ -1,6 +1,6 @@
 Package: harp
 Title: harp
-Version: 0.0.0.9034
+Version: 0.0.9
 Authors@R: as.person(c(
     "Andrew Singleton <andrewts@met.no> [aut, cre]", 
     "Alex Deckmyn <alex.deckmyn@meteo.be> [aut]"
@@ -10,14 +10,14 @@ License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    harpIO,
-    harpPoint,
-    harpVis,
+    harpIO (>= 0.0.9),
+    harpPoint (>= 0.0.9),
+    harpVis (>= 0.0.9),
     harpSpatial
 Remotes: 
-    harphub/harpIO,
-    harphub/harpPoint,
-    harphub/harpVis,
+    harphub/harpIO@0.0.9,
+    harphub/harpPoint@0.0.9,
+    harphub/harpVis@0.0.9,
     harphub/harpSpatial
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
