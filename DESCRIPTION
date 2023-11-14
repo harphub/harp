@@ -10,9 +10,9 @@ License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    harpIO (>= 0.0.9),
-    harpPoint (>= 0.0.9),
-    harpVis (>= 0.0.9),
+    harpIO (<= 0.0.9),
+    harpPoint (<= 0.0.9),
+    harpVis (<= 0.0.9),
     harpSpatial
 Remotes: 
     harphub/harpIO@0.0.9,
