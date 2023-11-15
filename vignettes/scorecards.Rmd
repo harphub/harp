@@ -55,28 +55,22 @@ param <- "T2m"
 
 # Read the forecast data
 fcst <- read_point_forecast(
-  start_date = 2019021700,
-  end_date   = 2019021718,
+  dttm       = seq_dttm(2019021700, 2019021718, "6h"),
   fcst_model = c("AROME_Arctic_prod", "MEPS_prod"),
   fcst_type  = "det",
   parameter  = param,
-  by         = "6h",
   file_path  = system.file("FCTABLE/deterministic", package = "harpData")
 )
 
 # Select the common cases
 fcst <- common_cases(fcst)
 
-# Pull the station IDs from fcst so we don't read too many observations
-stations <- pull_stations(fcst)
-
 # Read the observations
 obs <- read_point_obs(
-  first_validdate(fcst),
-  last_validdate(fcst),
+  unique_valid_dttm(fcst),
   param, 
   obs_path = system.file("OBSTABLE", package = "harpData"),
-  stations = stations
+  stations = unique_stations(fcst)
 )
 
 # Join the observations to the forecast
@@ -87,12 +81,12 @@ fcst <- join_to_fcst(fcst, obs)
 # param variable as a column name rather than a variable. We do this by
 # wrapping in double curly brackets.
 
-result <- pooled_bootstrap_score(
+result <- bootstrap_verify(
   fcst, 
   det_verify,         # the function we want to use in the verification
   {{param}},
   n         = 100,     # the number of bootstrap replicates
-  pooled_by = "SID"
+  pool_by   = "SID"
 )
 
 result
@@ -105,28 +99,22 @@ param <- "T2m"
 
 # Read the forecast data
 fcst <- read_point_forecast(
-  start_date = 2019021700,
-  end_date   = 2019021718,
+  dttm       = seq_dttm(2019021700, 2019021718, "6h"),
   fcst_model = c("AROME_Arctic_prod", "MEPS_prod"),
   fcst_type  = "det",
   parameter  = param,
-  by         = "6h",
   file_path  = system.file("FCTABLE/deterministic", package = "harpData")
 )
 
 # Select the common cases
 fcst <- common_cases(fcst)
 
-# Pull the station IDs from fcst so we don't read too many observations
-stations <- pull_stations(fcst)
-
 # Read the observations
 obs <- read_point_obs(
-  first_validdate(fcst),
-  last_validdate(fcst),
+  unique_valid_dttm(fcst),
   param, 
   obs_path = system.file("OBSTABLE", package = "harpData"),
-  stations = stations
+  stations = unique_stations(fcst)
 )
 
 # Join the observations to the forecast
@@ -137,12 +125,14 @@ fcst <- join_to_fcst(fcst, obs)
 # param variable as a column name rather than a variable. We do this by
 # wrapping in double curly brackets.
 
-result <- pooled_bootstrap_score(
+result <- bootstrap_verify(
   fcst, 
   det_verify,         # the function we want to use in the verification
   {{param}},
-  n         = 100,     # the number of bootstrap replicates
-  pooled_by = "SID"
+  n         = 8,     # the number of bootstrap replicates
+  pool_by   = "SID",
+  parallel  = TRUE,
+  num_cores = 8
 )
 
 result
@@ -151,22 +141,20 @@ result
 The score card will eventually be plotted from information in the "confidence of differences" data frame in the result. You don't really need to be familiar with the content of the data frame, except to note that 'fcst_model' and 'ref_model' are column names and we will want to choose values from those columns when we come to plot the data. 
 
 ### Multiple parameters
-Now that we have computed the data for one parameter, how should we do it for multiple parameters? We could write a for loop around the above code, but that isn't all that flexible. It would be preferable to turn the above into a function so that we can reuse it and use R's `lapply` function to apply our new function to multiple parameters. Let's start with making a function, being sure to not hard code anything - we will need arguments for the start and end dates (`start_date` and `end_date`), the frequency of the forecasts (`by`), the names of the forecast models (`fcst_model`), the forecast type (whether they are ensemble forecasts or deterministic: `fcst_type`), the paths to the forecasts and observations (`fcst_path` and `obs_path`), the number of bootstrap replicates to do (`n`), what to pool the scores by (`pooled_by`), and of course the parameter (`param`). Since we have such a small amount of data in this example we need to set the minimum number of cases to something small (`min_cases`) to ensure that the function runs. We will also add a groupings argument, with the default value "leadtime", which we will use in a later example. 
+Now that we have computed the data for one parameter, how should we do it for multiple parameters? We could write a for loop around the above code, but that isn't all that flexible. It would be preferable to turn the above into a function so that we can reuse it and use R's `lapply` function to apply our new function to multiple parameters. Let's start with making a function, being sure to not hard code anything - we will need arguments for the start and end dates (`start_date` and `end_date`), the frequency of the forecasts (`by`), the names of the forecast models (`fcst_model`), the forecast type (whether they are ensemble forecasts or deterministic: `fcst_type`), the paths to the forecasts and observations (`fcst_path` and `obs_path`), the number of bootstrap replicates to do (`n`), what to pool the scores by (`pool_by`), and of course the parameter (`param`). Since we have such a small amount of data in this example we need to set the minimum number of cases to something small (`min_cases`) to ensure that the function runs. We will also add a groupings argument, with the default value "leadtime", which we will use in a later example. 
 
 ```{r sc_func}
 scorecard_function <- function(
   param,
-  start_date,
-  end_date,
-  by,
+  dttm,
   fcst_model,
   fcst_type, 
   fcst_path,
   obs_path, 
   n, 
-  pooled_by,
+  pool_by,
   min_cases,
-  groupings = "leadtime"
+  groupings = "lead_time"
 ) {
   
   # Output some information to the user
@@ -175,25 +163,20 @@ scorecard_function <- function(
   message("==============================", rep("=", nchar(param)), "\n")  
   
   fcst <- read_point_forecast(
-    start_date = start_date,
-    end_date   = end_date,
+    dttm       = dttm,
     fcst_model = fcst_model,
     fcst_type  = fcst_type,
     parameter  = param,
-    by         = by,
     file_path  = fcst_path
   )
   
   fcst <- common_cases(fcst)
   
-  stations <- pull_stations(fcst)
-  
   obs <- read_point_obs(
-    start_date = first_validdate(fcst),
-    end_date   = last_validdate(fcst),
+    dttm       = unique_valid_dttm(fcst),
     parameter  = param, 
     obs_path   = obs_path,
-    stations   = stations
+    stations   = unique_stations(fcst)
   )
   
   # If no obervations were found return NULL
@@ -202,22 +185,22 @@ scorecard_function <- function(
   fcst <- join_to_fcst(fcst, obs)
   
   if (fcst_type == "det") {
-    pooled_bootstrap_score(
+    bootstrap_verify(
       fcst, 
       det_verify,        
       {{param}},
       n         = n,     
-      pooled_by = pooled_by,
+      pool_by   = pool_by,
       min_cases = min_cases, 
       groupings = groupings
     )
   } else {
-    pooled_bootstrap_score(
+    bootstrap_verify(
       fcst, 
       ens_verify,        
       {{param}},
       n         = n,     
-      pooled_by = pooled_by,
+      pool_by   = pool_by,
       min_cases = min_cases, 
       groupings = groupings
     )
@@ -233,15 +216,13 @@ parameters <- c("T2m", "S10m", "T850", "T700", "T500", "Td850", "Td700", "Td500"
 scorecard_data <- lapply(
   parameters, 
   scorecard_function,
-  start_date = 2019021700,
-  end_date   = 2019021718,
-  by         = "6h",
+  dttm       = seq_dttm(2019021700, 2019021718, "6h"),
   fcst_model = c("AROME_Arctic_prod", "MEPS_prod"),
   fcst_type  = "det",
   fcst_path  = system.file("FCTABLE/deterministic", package = "harpData"),
   obs_path   = system.file("OBSTABLE", package = "harpData"), 
   n          = 100, 
-  pooled_by  = "SID",
+  pool_by    = "SID",
   min_cases  = 5
 )
 ```
@@ -249,26 +230,92 @@ scorecard_data <- lapply(
 ```{r lapply_sc_func_run, echo=FALSE, message=FALSE, warning=FALSE}
 parameters <- c("T2m", "S10m", "T850", "T700", "T500", "Td850", "Td700", "Td500")
 
+fun <- function(
+  param,
+  dttm,
+  fcst_model,
+  fcst_type, 
+  fcst_path,
+  obs_path, 
+  n, 
+  pool_by,
+  min_cases,
+  groupings = "lead_time"
+) {
+  
+  # Output some information to the user
+  message("\n")
+  message("Generating scorecard data for ", param)
+  message("==============================", rep("=", nchar(param)), "\n")  
+  
+  fcst <- read_point_forecast(
+    dttm       = dttm,
+    fcst_model = fcst_model,
+    fcst_type  = fcst_type,
+    parameter  = param,
+    file_path  = fcst_path
+  )
+  
+  fcst <- common_cases(fcst)
+  
+  obs <- read_point_obs(
+    dttm       = unique_valid_dttm(fcst),
+    parameter  = param, 
+    obs_path   = obs_path,
+    stations   = unique_stations(fcst)
+  )
+  
+  # If no obervations were found return NULL
+  if (nrow(obs) < 1) return(NULL)
+  
+  fcst <- join_to_fcst(fcst, obs)
+  
+  if (fcst_type == "det") {
+    bootstrap_verify(
+      fcst, 
+      det_verify,        
+      {{param}},
+      n         = n,     
+      pool_by   = pool_by,
+      min_cases = min_cases, 
+      groupings = groupings,
+      parallel  = TRUE,
+      num_cores = 8
+    )
+  } else {
+    bootstrap_verify(
+      fcst, 
+      ens_verify,        
+      {{param}},
+      n         = n,     
+      pool_by   = pool_by,
+      min_cases = min_cases, 
+      groupings = groupings,
+      parallel  = TRUE,
+      num_cores = 8
+    )
+  }
+  
+}
+
 scorecard_data <- lapply(
   parameters, 
-  scorecard_function,
-  start_date = 2019021700,
-  end_date   = 2019021718,
-  by         = "6h",
+  fun,
+  dttm       = seq_dttm(2019021700, 2019021718, "6h"),
   fcst_model = c("AROME_Arctic_prod", "MEPS_prod"),
   fcst_type  = "det",
   fcst_path  = system.file("FCTABLE/deterministic", package = "harpData"),
   obs_path   = system.file("OBSTABLE", package = "harpData"), 
-  n          = 100, 
-  pooled_by  = "SID",
+  n          = 8, 
+  pool_by    = "SID",
   min_cases  = 5
 )
 ```
 
-The output in `scorecard_data` is a list, with one element for each parameter. Before we can plot the score card, we need to bind all of those elements into a single element using `harpPoint::bind_bootstrap_score`.
+The output in `scorecard_data` is a list, with one element for each parameter. Before we can plot the score card, we need to bind all of those elements into a single element using `bind_point_verif`.
 
 ```{r bind_bs}
-scorecard_data <- bind_bootstrap_score(scorecard_data)
+scorecard_data <- bind_point_verif(scorecard_data)
 ```
 
 Now we can plot the score card using `harpVis::plot_scorecard`. We need to tell the function which model we want to assess and which model to use as the reference. We also need to tell the function which scores we want to include in the score card.
