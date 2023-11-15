@@ -25,15 +25,8 @@ if (!require("remotes")) {
 remotes::install_github("harphub/harp")
 ```
 
-### Installing on ecgate
-Before installing on ecgate you need to load the proj4 and R modules before starting R and executing the above:
-```{bash eval=FALSE}
-module load proj4
-module load R
-```
-
 ### System libraries
-The [{_harpIO_}](https://harphub.github.io/harpIO) and [{_harpSpatial_}](https://harphub.github.io/harpSpatial) packages use the [{_meteogrid_}](https://github.com/harphub/meteogrid) package for interpolation and the geogrid class for storing gridded data. This package makes use of the [PROJ4](https://proj4.org) library for handling projections. If you do not have PROJ4 installed you can install with:
+_harp_ packages use the [{_meteogrid_}](https://github.com/harphub/meteogrid) package for interpolation and the geogrid class for storing gridded data. This package makes use of the [PROJ](https://proj4.org) library for handling projections. If you do not have PROJ installed you can install with:
 
 ```{bash eval=FALSE}
 sudo apt-get install libproj-dev
@@ -41,10 +34,10 @@ sudo apt-get install libproj-dev
 
 If you do not have sudo rights, try installing a user local version, or speak to your system administrator. 
 
-If you have the PROJ4 libraries installed in a standard location (e.g. /usr/local) {_meteogrid_} will install without problems. However, if the PROJ4 libraries are in a non standard location, you need to tell the install function where they are:
+If you have the PROJ libraries installed in a standard location (e.g. /usr/local) {_meteogrid_} will install without problems. However, if the PROJ libraries are in a non standard location, you need to tell the install function where they are:
 ```{r eval=FALSE}
 remotes::install_github(
-  "harphub/harpIO",
+  "harphub/harp",
   configure.args = c(
     meteogrid = "--with-proj=/path/to/proj"
   )
@@ -68,8 +61,5 @@ In this case you only have to set them once and not worry about it when you wish
 
 When setting environment variables or creating a Makevars file, R must be restarted for the changes to take effect before running `remotes::install_github("harphub/harp")`.
 
-## Workflows
-The purpose of this website is to demonstrate common workflows, such as point and spatial verification, score card generation, and data analysis using the {_harp_} packages. 
-
-## harp book
-An online [book](https://harphub.github.io/harp_tutorial) that collects together tutorials on how to use harp is currently being worked on. Feel free to make suggestions, or to contribute by filing issues or pull requests [here](https://github.com/harphub/harp_tutorial) 
+## Learning harp
+Currently the best learning resource for getting started with harp is the [2022 training course website](https://harphub.github.io/harp-training-2022/) that includes a number of worked examples. There are plans to make an online book available in 2024 that will go into harp's functionalities in more detail.
