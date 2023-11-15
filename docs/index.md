@@ -1,14 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# harp <img src='man/figures/harp_logo_dark.svg' align="right" width = "80" /></a>
+# harp <img src='man/figures/harp_logo_dark.svg' align = "right" width = "80">
 
 ## *A framework for meteorological data in R*
 
 {*harp*} is a meta-package that attaches functionality from the
 [{*harpIO*}](https://harphub.github.io/harpIO),
 [{*harpPoint*}](https://harphub.github.io/harpPoint),
-[*{harpVis*}](https://harphub.github.io/harpVis) and
+[{*harpVis*}](https://harphub.github.io/harpVis) and
 [{*harpSpatial*}](https://harphub.github.io/harpSpatial) packages to
 your session.
 
@@ -26,7 +26,7 @@ remotes::install_github("harphub/harp")
 *harp* packages use the
 [{*meteogrid*}](https://github.com/harphub/meteogrid) package for
 interpolation and the geogrid class for storing gridded data. This
-package makes use of the [PROJ](https://proj4.org) library for handling
+package makes use of the [PROJ](https://proj.org) library for handling
 projections. If you do not have PROJ installed you can install with:
 
 ``` bash

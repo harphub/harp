@@ -1,5 +1,5 @@
 Package: harp
-Title: harp
+Title: A framework in R for meteorological data
 Version: 0.2.0
 Authors@R: as.person(c(
     "Andrew Singleton <andrewts@met.no> [aut, cre]", 

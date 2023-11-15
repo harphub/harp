@@ -1,0 +1,7 @@
+pandoc: 3.1.1
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  scorecards: scorecards.html
+last_built: 2023-11-15T14:17Z
+

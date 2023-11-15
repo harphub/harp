@@ -1,0 +1,9 @@
+url: ~
+template:
+  bootstrap: 5
+home:
+  title: A framework for meteorogical data
+  description: >
+    harp is a meta package in R that includes packages for reading
+    and writing data, verifying point and gridded forecasts and visualization.
+
