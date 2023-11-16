@@ -12,8 +12,9 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-# harp <a href=#><img src='man/figures/harp_logo_dark.svg' align="right" height="131.5" style="margin-left:30px" /></a>
+# harp <img src='man/figures/harp_logo_dark.svg' align="right" width = "80" /></a>
 
+## _A framework for meteorological data in R_
 
 {_harp_} is a meta-package that attaches functionality from the [{_harpIO_}](https://harphub.github.io/harpIO), [{_harpPoint_}](https://harphub.github.io/harpPoint), [_{harpVis_}](https://harphub.github.io/harpVis) and [{_harpSpatial_}](https://harphub.github.io/harpSpatial) packages to your session.  
 

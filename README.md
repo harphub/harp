@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# harp <a href=#><img src='man/figures/harp_logo_dark.svg' align="right" height="131.5" style="margin-left:30px" /></a>
+# harp <img src='man/figures/harp_logo_dark.svg' align="right" width = "80" /></a>
+
+## *A framework for meteorological data in R*
 
 {*harp*} is a meta-package that attaches functionality from the
 [{*harpIO*}](https://harphub.github.io/harpIO),
