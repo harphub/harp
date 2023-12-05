@@ -1,3 +1,40 @@
+# harp v0.2.1
+
+* Hotfixes for harpCore, harpIO and harpVis
+
+## harpCore
+
+* Adds functionality to generate time sequences with 
+`seq_secs()`, `seq_mins()`, `seq_hours()` and `seq_days()`
+
+## harpIO
+
+### Bug fixes
+
+* Fix a bug whereby `read_point_obs()` failed when not all accumulation periods
+are available in the SQLite file
+
+* Add "ws" to list of known parameters in `parse_harp_parameter()`
+
+### NetCDF improvements
+
+* When no projection string is available, get the projection information from
+CF compliant attributes
+
+* Get dimension names from variables. In general this means that dimension names
+no longer need to be set via `netcdf_opts()`
+
+### Documentation improvements
+
+* Vignette added to describing how to read point observations from .csv files
+
+* Extra note added to help users install the `hsf5r` package
+
+## harpVis
+
+* Add functionality to plot new spatial verification scores
+
+
 # harp v0.2.0
 
 * Major updates in all harp packages.

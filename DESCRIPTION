@@ -1,6 +1,6 @@
 Package: harp
-Title: A framework in R for meteorological data
-Version: 0.2.0
+Title: harp
+Version: 0.2.1
 Authors@R: as.person(c(
     "Andrew Singleton <andrewts@met.no> [aut, cre]", 
     "Alex Deckmyn <alex.deckmyn@meteo.be> [aut]"
@@ -10,14 +10,14 @@ License: Apache License (>= 2.0)
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    harpIO (>= 0.2.0),
+    harpIO (>= 0.2.1),
     harpPoint (>= 0.2.0),
-    harpVis (>= 0.2.0),
+    harpVis (>= 0.2.1),
     harpSpatial
 Remotes: 
-    harphub/harpIO@v0.2.0,
-    harphub/harpPoint@v0.2.0,
-    harphub/harpVis@v0.2.0,
+    harphub/harpIO@0.2.1,
+    harphub/harpPoint@0.2.0,
+    harphub/harpVis@0.2.1,
     harphub/harpSpatial
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
