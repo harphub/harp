@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">harp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,37 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="harp-v021">harp v0.2.1<a class="anchor" aria-label="anchor" href="#harp-v021"></a></h2>
+<ul><li>Hotfixes for harpCore, harpIO and harpVis</li>
+</ul><div class="section level3">
+<h3 id="harpcore-0-2-1">harpCore<a class="anchor" aria-label="anchor" href="#harpcore-0-2-1"></a></h3>
+<ul><li>Adds functionality to generate time sequences with <code>seq_secs()</code>, <code>seq_mins()</code>, <code>seq_hours()</code> and <code>seq_days()</code>
+</li>
+</ul></div>
+<div class="section level3">
+<h3 id="harpio-0-2-1">harpIO<a class="anchor" aria-label="anchor" href="#harpio-0-2-1"></a></h3>
+<div class="section level4">
+<h4 id="bug-fixes-0-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-1"></a></h4>
+<ul><li><p>Fix a bug whereby <code><a href="https://rdrr.io/pkg/harpIO/man/read_point_obs.html" class="external-link">read_point_obs()</a></code> failed when not all accumulation periods are available in the SQLite file</p></li>
+<li><p>Add “ws” to list of known parameters in <code><a href="https://rdrr.io/pkg/harpIO/man/parse_harp_parameter.html" class="external-link">parse_harp_parameter()</a></code></p></li>
+</ul></div>
+<div class="section level4">
+<h4 id="netcdf-improvements-0-2-1">NetCDF improvements<a class="anchor" aria-label="anchor" href="#netcdf-improvements-0-2-1"></a></h4>
+<ul><li><p>When no projection string is available, get the projection information from CF compliant attributes</p></li>
+<li><p>Get dimension names from variables. In general this means that dimension names no longer need to be set via <code><a href="https://rdrr.io/pkg/harpIO/man/netcdf_opts.html" class="external-link">netcdf_opts()</a></code></p></li>
+</ul></div>
+<div class="section level4">
+<h4 id="documentation-improvements-0-2-1">Documentation improvements<a class="anchor" aria-label="anchor" href="#documentation-improvements-0-2-1"></a></h4>
+<ul><li><p>Vignette added to describing how to read point observations from .csv files</p></li>
+<li><p>Extra note added to help users install the <code>hsf5r</code> package</p></li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="harpvis-0-2-1">harpVis<a class="anchor" aria-label="anchor" href="#harpvis-0-2-1"></a></h3>
+<ul><li>Add functionality to plot new spatial verification scores</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="harp-v020">harp v0.2.0<a class="anchor" aria-label="anchor" href="#harp-v020"></a></h2>
 <ul><li><p>Major updates in all harp packages.</p></li>
 <li><p>Introduction of new package <em>{harpCore}</em> which provides classes and functionalities that are common to all harp packages, including methods for geographic transformations via <code>geo_&lt;.&gt;</code> functions and fast neighbourhood smoothing of gridded fields via the <code>nbhd_smooth()</code> function.</p></li>
@@ -69,18 +100,18 @@
 <td align="left">valid_dttm</td>
 </tr><tr class="odd"><td align="left">leadtime</td>
 <td align="left">lead_time</td>
-</tr></tbody></table><ul><li><p><code>bind_fcst()</code> is deprecated. <code>bind()</code> should be used instead.</p></li>
-<li><p><code>get_filenames()</code> is deprecated. <code>generate_filenames()</code> should be used instead.</p></li>
-<li><p><code>msub()</code> is deprecated. <code>psub()</code> should be used instead.</p></li>
-<li><p><code>read_det_interpolate()</code> and <code>read_eps_interpolate()</code> are defunct. <code>read_forecast(..., transformation = "interpolate")</code> should be used instead.</p></li>
-<li><p><code>read_obs_convert()</code> is defunct. <code>read_obs(..., transformation = "...")</code> should be used instead.</p></li>
+</tr></tbody></table><ul><li><p><code><a href="https://rdrr.io/pkg/harpIO/man/bind_fcst.html" class="external-link">bind_fcst()</a></code> is deprecated. <code>bind()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpIO/man/get_filenames.html" class="external-link">get_filenames()</a></code> is deprecated. <code><a href="https://rdrr.io/pkg/harpIO/man/generate_filenames.html" class="external-link">generate_filenames()</a></code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpIO/man/msub.html" class="external-link">msub()</a></code> is deprecated. <code>psub()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpIO/man/read_det_interpolate.html" class="external-link">read_det_interpolate()</a></code> and <code><a href="https://rdrr.io/pkg/harpIO/man/read_eps_interpolate.html" class="external-link">read_eps_interpolate()</a></code> are defunct. <code>read_forecast(..., transformation = "interpolate")</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpIO/man/read_obs_convert.html" class="external-link">read_obs_convert()</a></code> is defunct. <code>read_obs(..., transformation = "...")</code> should be used instead.</p></li>
 </ul></div>
 <div class="section level4">
 <h4 id="selected-new-features-0-2-0">Selected new features<a class="anchor" aria-label="anchor" href="#selected-new-features-0-2-0"></a></h4>
 <ul><li><p>Parameters are defined via the internal data list <code>harp_params</code>. This list includes parameter name substitutions for different file formats and the possibility to apply a function to specific parameters at read time.</p></li>
-<li><p>The parameter list can be added to or modified with <code>add_param_def()</code> and <code>modify_param_def()</code> respectively.</p></li>
-<li><p>All data read in by harp read functions attain a class - the print method for each class tells you what type of dataset it is. One exception is for <code>read_obs()</code> and <code>read_point_obs()</code>, which both return basic tibbles (data frames).</p></li>
-<li><p><code>use_grib_stepRange()</code> is added as a helper to select grib messages via <code>grib_opts(param_find = list(param = use_grib_stepRange(...)))</code>. This is useful for determining between accumulated and instantaneous variables with the same grib shortName. <code>{lead_time}</code> can be used to take the current lead time.</p></li>
+<li><p>The parameter list can be added to or modified with <code><a href="https://rdrr.io/pkg/harpIO/man/parameter_definitions.html" class="external-link">add_param_def()</a></code> and <code><a href="https://rdrr.io/pkg/harpIO/man/parameter_definitions.html" class="external-link">modify_param_def()</a></code> respectively.</p></li>
+<li><p>All data read in by harp read functions attain a class - the print method for each class tells you what type of dataset it is. One exception is for <code><a href="https://rdrr.io/pkg/harpIO/man/read_obs.html" class="external-link">read_obs()</a></code> and <code><a href="https://rdrr.io/pkg/harpIO/man/read_point_obs.html" class="external-link">read_point_obs()</a></code>, which both return basic tibbles (data frames).</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpIO/man/grib_opts.html" class="external-link">use_grib_stepRange()</a></code> is added as a helper to select grib messages via <code>grib_opts(param_find = list(param = use_grib_stepRange(...)))</code>. This is useful for determining between accumulated and instantaneous variables with the same grib shortName. <code>{lead_time}</code> can be used to take the current lead time.</p></li>
 </ul></div>
 </div>
 <div class="section level3">
@@ -90,32 +121,32 @@
 <ul><li><p>Default <code>groupings</code> argument changed from <code>"leadtime"</code> to <code>"lead_time"</code> for consistency with changes in <em>{harpIO}</em>. Scripts that use verification functions with <code>"leadtime"</code>, <code>"validdate"</code> and <code>"fcdate"</code> as values to <code>groupings</code> should be changed to <code>"lead_time"</code>, <code>"valid_dttm"</code> and <code>"fcst_dttm"</code> respectively.</p></li>
 <li><p>Verification outputs now use the column name <code>fcst_model</code> instead of <code>mname</code> so that there is consistency throughout harp.</p></li>
 <li><p>Attributes for verification outputs have changed to include all forecast dates, all stations and all groupings used in the verification. Any scripts that make use of these attributes should be updated to reflect the new attributes.</p></li>
-<li><p><code>scale_point_forecast()</code> and <code>scale_point_obs()</code> are deprecated. <code>scale_param()</code> should be used instead.</p></li>
-<li><p><code>gather_members()</code> and <code>spread_members()</code> are deprecated. <code>pivot_members()</code> should be used instead.</p></li>
-<li><p><code>first_validdate()</code> and <code>last_validdate()</code> are deprecated. <code>unique_valid_dttm()</code> should be used instead.</p></li>
-<li><p><code>pull_stations()</code> is deprecated. <code>unique_stations()</code> should be used instead.</p></li>
-<li><p><code>bootstrap_score()</code>, <code>pooled_bootstrap_score()</code> and <code>bind_bootstrap_score()</code> are defunct. <code>bootstrap_verify()</code> and <code>bind_point_verif()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/scale_point_forecast.html" class="external-link">scale_point_forecast()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/scale_point_obs.html" class="external-link">scale_point_obs()</a></code> are deprecated. <code>scale_param()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/gather_members.html" class="external-link">gather_members()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/spread_members.html" class="external-link">spread_members()</a></code> are deprecated. <code>pivot_members()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">first_validdate()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">last_validdate()</a></code> are deprecated. <code>unique_valid_dttm()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/pull_stations.html" class="external-link">pull_stations()</a></code> is deprecated. <code>unique_stations()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/bootstrap_score.html" class="external-link">bootstrap_score()</a></code>, <code><a href="https://rdrr.io/pkg/harpPoint/man/pooled_bootstrap_score.html" class="external-link">pooled_bootstrap_score()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/bind_bootstrap_score.html" class="external-link">bind_bootstrap_score()</a></code> are defunct. <code><a href="https://rdrr.io/pkg/harpPoint/man/bootstrap_verify.html" class="external-link">bootstrap_verify()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/bind_point_verif.html" class="external-link">bind_point_verif()</a></code> should be used instead.</p></li>
 </ul></div>
 <div class="section level4">
 <h4 id="selected-new-features-0-2-0-1">Selected new features<a class="anchor" aria-label="anchor" href="#selected-new-features-0-2-0-1"></a></h4>
 <ul><li><p>Verification functions have gained new progress bars and are generally less verbose in what they are doing, restricting messages to only progress with computing scores for different verification groups.</p></li>
 <li><p>New verification score <strong>hexbin</strong>. This gives a data frame of what is essentially a heat map of forecast - observation value pairs.</p></li>
 <li><p>New class, attributes and print method for verification function outputs.</p></li>
-<li><p><code>jitter_fcst()</code> now accepts vectorized functions so should be a lot faster.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/jitter_fcst.html" class="external-link">jitter_fcst()</a></code> now accepts vectorized functions so should be a lot faster.</p></li>
 </ul></div>
 </div>
 <div class="section level3">
 <h3 id="harpvis-0-2-0">harpVis<a class="anchor" aria-label="anchor" href="#harpvis-0-2-0"></a></h3>
 <div class="section level4">
 <h4 id="breaking-changes-0-2-0-2">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0-2"></a></h4>
-<ul><li><p><code>plot_scatter()</code> is soft deprecated. Since the data are computed in verification functions, scatter (or more accurately hexbin) plots can now be made with <code>plot_point_verif(..., score = hexbin)</code></p></li>
-<li><p><code>plot_station_eps()</code> is defunct. <code>plot_station_ts()</code> should be used instead.</p></li>
+<ul><li><p><code><a href="https://rdrr.io/pkg/harpVis/man/plot_scatter.html" class="external-link">plot_scatter()</a></code> is soft deprecated. Since the data are computed in verification functions, scatter (or more accurately hexbin) plots can now be made with <code>plot_point_verif(..., score = hexbin)</code></p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpVis/man/plot_station_eps.html" class="external-link">plot_station_eps()</a></code> is defunct. <code><a href="https://rdrr.io/pkg/harpVis/man/plot_station_ts.html" class="external-link">plot_station_ts()</a></code> should be used instead.</p></li>
 </ul></div>
 <div class="section level4">
 <h4 id="selected-new-features-0-2-0-2">Selected new features<a class="anchor" aria-label="anchor" href="#selected-new-features-0-2-0-2"></a></h4>
 <ul><li><p>Plot functions are backwards compatible so that verification data produced by old versions of <em>{harpPoint}</em> with <code>leadtime</code>, <code>mname</code>, <code>fcdate</code>, <code>validdate</code> included in the column names will still work.</p></li>
-<li><p><code>geom_georaster()</code>, <code>geom_geocontour()</code> and <code>geom_geocontour_filled()</code> are new functions for plotting gridded data using <a href="https://ggplot2.tidyverse.org/index.html" class="external-link">ggplot</a>. An upscaling option is added to enable faster plotting of rasters and calculation / smoothing of contours.</p></li>
-<li><p>Map data for plots projected to the domain of a gridded data field can be retrieved using <code>get_map()</code>.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpVis/man/geom_georaster.html" class="external-link">geom_georaster()</a></code>, <code><a href="https://rdrr.io/pkg/harpVis/man/geom_geocontour.html" class="external-link">geom_geocontour()</a></code> and <code><a href="https://rdrr.io/pkg/harpVis/man/geom_geocontour.html" class="external-link">geom_geocontour_filled()</a></code> are new functions for plotting gridded data using <a href="https://ggplot2.tidyverse.org/index.html" class="external-link">ggplot</a>. An upscaling option is added to enable faster plotting of rasters and calculation / smoothing of contours.</p></li>
+<li><p>Map data for plots projected to the domain of a gridded data field can be retrieved using <code><a href="https://rdrr.io/pkg/harpVis/man/get_map.html" class="external-link">get_map()</a></code>.</p></li>
 <li><p>The shiny app for point verification can now select from different time axes and will recognise and plot vertical profile verifications.</p></li>
 <li><p>The shiny app for point verification has gained two new options: <code>full_dir_navigation</code> controls whether a modal is opened for selecting data directories (the old behaviour), or simply populating a dropdown selector. <code>theme</code> allows you to control the overall appearance of the app and you can choose between “dark”, “light” and “white”.</p></li>
 </ul></div>
