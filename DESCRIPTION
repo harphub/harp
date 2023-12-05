@@ -1,6 +1,6 @@
 Package: harp
 Title: harp
-Version: 0.2.1.9000
+Version: 0.2.1
 Authors@R: as.person(c(
     "Andrew Singleton <andrewts@met.no> [aut, cre]", 
     "Alex Deckmyn <alex.deckmyn@meteo.be> [aut]"
@@ -15,10 +15,10 @@ Depends:
     harpVis (>= 0.2.1),
     harpSpatial
 Remotes: 
-    harphub/harpIO@develop,
-    harphub/harpPoint@develop,
-    harphub/harpVis@develop,
-    harphub/harpSpatial@develop
+    harphub/harpIO@0.2.1,
+    harphub/harpPoint@0.2.0,
+    harphub/harpVis@0.2.1,
+    harphub/harpSpatial
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
 Suggests: 
