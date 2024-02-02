@@ -55,8 +55,8 @@
 <ul><li>Hotfixes for harpCore, harpIO, harpPoint and harpVis</li>
 </ul><div class="section level3">
 <h3 id="harpcore-0-2-2">harpCore<a class="anchor" aria-label="anchor" href="#harpcore-0-2-2"></a></h3>
-<ul><li><p><code>define_domain()</code> has been improved so that it can take a <em>proj</em> string, e.g. <code>"+proj=lcc +lon_0=15 +lat_0=63.3 +lat_1=63.3 +lat_2=63.3 +R=6371000"</code> as the <code>proj</code> argument.</p></li>
-<li><p><code>geo_reproject()</code> has been added to enable data frames with latitude and longitude columns to be expressed in projection coordinates.</p></li>
+<ul><li><p><code><a href="https://rdrr.io/pkg/harpCore/man/define_domain.html" class="external-link">define_domain()</a></code> has been improved so that it can take a <em>proj</em> string, e.g. <code>"+proj=lcc +lon_0=15 +lat_0=63.3 +lat_1=63.3 +lat_2=63.3 +R=6371000"</code> as the <code>proj</code> argument.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpCore/man/geo_reproject.html" class="external-link">geo_reproject()</a></code> has been added to enable data frames with latitude and longitude columns to be expressed in projection coordinates.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="harpio-0-2-2">harpIO<a class="anchor" aria-label="anchor" href="#harpio-0-2-2"></a></h3>
@@ -74,7 +74,7 @@
 <ul><li>Hotfixes for harpCore, harpIO and harpVis</li>
 </ul><div class="section level3">
 <h3 id="harpcore-0-2-1">harpCore<a class="anchor" aria-label="anchor" href="#harpcore-0-2-1"></a></h3>
-<ul><li>Adds functionality to generate time sequences with <code>seq_secs()</code>, <code>seq_mins()</code>, <code>seq_hours()</code> and <code>seq_days()</code>
+<ul><li>Adds functionality to generate time sequences with <code><a href="https://rdrr.io/pkg/harpCore/man/seq_dttm.html" class="external-link">seq_secs()</a></code>, <code><a href="https://rdrr.io/pkg/harpCore/man/seq_dttm.html" class="external-link">seq_mins()</a></code>, <code><a href="https://rdrr.io/pkg/harpCore/man/seq_dttm.html" class="external-link">seq_hours()</a></code> and <code><a href="https://rdrr.io/pkg/harpCore/man/seq_dttm.html" class="external-link">seq_days()</a></code>
 </li>
 </ul></div>
 <div class="section level3">
@@ -103,13 +103,13 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="harp-v020">harp v0.2.0<a class="anchor" aria-label="anchor" href="#harp-v020"></a></h2>
 <ul><li><p>Major updates in all harp packages.</p></li>
-<li><p>Introduction of new package <em>{harpCore}</em> which provides classes and functionalities that are common to all harp packages, including methods for geographic transformations via <code>geo_&lt;.&gt;</code> functions and fast neighbourhood smoothing of gridded fields via the <code>nbhd_smooth()</code> function.</p></li>
+<li><p>Introduction of new package <em>{harpCore}</em> which provides classes and functionalities that are common to all harp packages, including methods for geographic transformations via <code>geo_&lt;.&gt;</code> functions and fast neighbourhood smoothing of gridded fields via the <code><a href="https://rdrr.io/pkg/harpCore/man/nbhd_smooth.html" class="external-link">nbhd_smooth()</a></code> function.</p></li>
 <li><p>A lot of internal changes to make things run more smoothly.</p></li>
 </ul><div class="section level3">
 <h3 id="harpio-0-2-0">harpIO<a class="anchor" aria-label="anchor" href="#harpio-0-2-0"></a></h3>
 <div class="section level4">
 <h4 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h4>
-<ul><li><p>Arguments <code>start_date</code>, <code>end_date</code>, and <code>by</code> to read functions are deprecated and replaced by <code>dttm</code>, to be used together with <code>seq_dttm()</code> to generate a sequence of date-time strings. Note that you can still use the old arguments, but will be periodically warned to change.</p></li>
+<ul><li><p>Arguments <code>start_date</code>, <code>end_date</code>, and <code>by</code> to read functions are deprecated and replaced by <code>dttm</code>, to be used together with <code><a href="https://rdrr.io/pkg/harpCore/man/seq_dttm.html" class="external-link">seq_dttm()</a></code> to generate a sequence of date-time strings. Note that you can still use the old arguments, but will be periodically warned to change.</p></li>
 <li><p>New column names in outputs to read functions</p></li>
 </ul><table class="table"><thead><tr class="header"><th align="left">Old name</th>
 <th align="left">New name</th>
@@ -119,9 +119,9 @@
 <td align="left">valid_dttm</td>
 </tr><tr class="odd"><td align="left">leadtime</td>
 <td align="left">lead_time</td>
-</tr></tbody></table><ul><li><p><code><a href="https://rdrr.io/pkg/harpIO/man/bind_fcst.html" class="external-link">bind_fcst()</a></code> is deprecated. <code>bind()</code> should be used instead.</p></li>
+</tr></tbody></table><ul><li><p><code><a href="https://rdrr.io/pkg/harpIO/man/bind_fcst.html" class="external-link">bind_fcst()</a></code> is deprecated. <code><a href="https://rdrr.io/pkg/harpCore/man/bind.html" class="external-link">bind()</a></code> should be used instead.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/harpIO/man/get_filenames.html" class="external-link">get_filenames()</a></code> is deprecated. <code><a href="https://rdrr.io/pkg/harpIO/man/generate_filenames.html" class="external-link">generate_filenames()</a></code> should be used instead.</p></li>
-<li><p><code><a href="https://rdrr.io/pkg/harpIO/man/msub.html" class="external-link">msub()</a></code> is deprecated. <code>psub()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpIO/man/msub.html" class="external-link">msub()</a></code> is deprecated. <code><a href="https://rdrr.io/pkg/harpCore/man/psub.html" class="external-link">psub()</a></code> should be used instead.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/harpIO/man/read_det_interpolate.html" class="external-link">read_det_interpolate()</a></code> and <code><a href="https://rdrr.io/pkg/harpIO/man/read_eps_interpolate.html" class="external-link">read_eps_interpolate()</a></code> are defunct. <code>read_forecast(..., transformation = "interpolate")</code> should be used instead.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/harpIO/man/read_obs_convert.html" class="external-link">read_obs_convert()</a></code> is defunct. <code>read_obs(..., transformation = "...")</code> should be used instead.</p></li>
 </ul></div>
@@ -140,10 +140,10 @@
 <ul><li><p>Default <code>groupings</code> argument changed from <code>"leadtime"</code> to <code>"lead_time"</code> for consistency with changes in <em>{harpIO}</em>. Scripts that use verification functions with <code>"leadtime"</code>, <code>"validdate"</code> and <code>"fcdate"</code> as values to <code>groupings</code> should be changed to <code>"lead_time"</code>, <code>"valid_dttm"</code> and <code>"fcst_dttm"</code> respectively.</p></li>
 <li><p>Verification outputs now use the column name <code>fcst_model</code> instead of <code>mname</code> so that there is consistency throughout harp.</p></li>
 <li><p>Attributes for verification outputs have changed to include all forecast dates, all stations and all groupings used in the verification. Any scripts that make use of these attributes should be updated to reflect the new attributes.</p></li>
-<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/scale_point_forecast.html" class="external-link">scale_point_forecast()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/scale_point_obs.html" class="external-link">scale_point_obs()</a></code> are deprecated. <code>scale_param()</code> should be used instead.</p></li>
-<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/gather_members.html" class="external-link">gather_members()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/spread_members.html" class="external-link">spread_members()</a></code> are deprecated. <code>pivot_members()</code> should be used instead.</p></li>
-<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">first_validdate()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">last_validdate()</a></code> are deprecated. <code>unique_valid_dttm()</code> should be used instead.</p></li>
-<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/pull_stations.html" class="external-link">pull_stations()</a></code> is deprecated. <code>unique_stations()</code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/scale_point_forecast.html" class="external-link">scale_point_forecast()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/scale_point_obs.html" class="external-link">scale_point_obs()</a></code> are deprecated. <code><a href="https://rdrr.io/pkg/harpCore/man/scale_param.html" class="external-link">scale_param()</a></code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/gather_members.html" class="external-link">gather_members()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/spread_members.html" class="external-link">spread_members()</a></code> are deprecated. <code><a href="https://rdrr.io/pkg/harpCore/man/pivot_members.html" class="external-link">pivot_members()</a></code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">first_validdate()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/first_validdate.html" class="external-link">last_validdate()</a></code> are deprecated. <code><a href="https://rdrr.io/pkg/harpCore/man/unique_col.html" class="external-link">unique_valid_dttm()</a></code> should be used instead.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/pull_stations.html" class="external-link">pull_stations()</a></code> is deprecated. <code><a href="https://rdrr.io/pkg/harpCore/man/unique_col.html" class="external-link">unique_stations()</a></code> should be used instead.</p></li>
 <li><p><code><a href="https://rdrr.io/pkg/harpPoint/man/bootstrap_score.html" class="external-link">bootstrap_score()</a></code>, <code><a href="https://rdrr.io/pkg/harpPoint/man/pooled_bootstrap_score.html" class="external-link">pooled_bootstrap_score()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/bind_bootstrap_score.html" class="external-link">bind_bootstrap_score()</a></code> are defunct. <code><a href="https://rdrr.io/pkg/harpPoint/man/bootstrap_verify.html" class="external-link">bootstrap_verify()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/bind_point_verif.html" class="external-link">bind_point_verif()</a></code> should be used instead.</p></li>
 </ul></div>
 <div class="section level4">
