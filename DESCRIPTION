@@ -16,10 +16,10 @@ Depends:
     harpVis (>= 0.2.2),
     harpSpatial
 Remotes: 
-    harphub/harpCore@v0.2.2,
-    harphub/harpIO@v0.2.2,
-    harphub/harpPoint@v0.2.1,
-    harphub/harpVis@v0.2.2,
+    harphub/harpCore,
+    harphub/harpIO,
+    harphub/harpPoint,
+    harphub/harpVis,
     harphub/harpSpatial
 URL: https://github.com/harphub/harp
 BugReports: https://github.com/harphub/harp/issues
