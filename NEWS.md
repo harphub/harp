@@ -1,3 +1,36 @@
+# harp v0.2.2
+
+* Hotfixes for harpCore, harpIO, harpPoint and harpVis
+
+## harpCore
+
+* `define_domain()` has been improved so that it can take a _proj_ string, 
+e.g. `"+proj=lcc +lon_0=15 +lat_0=63.3 +lat_1=63.3 +lat_2=63.3 +R=6371000"` as
+the `proj` argument.
+
+* `geo_reproject()` has been added to enable data frames with latitude and 
+longitude columns to be expressed in projection coordinates.
+
+## harpIO
+
+* New parameters added to OBSOUL reading.
+
+* Partial fix of bug that resulted in errors when extracting domain information
+from WRF output files - care should be taken when reading data from WRF files 
+as this is not fully tested.
+
+## harpPoint
+
+* Fixed a bug that caused errors in `check_obs_against_fcst()` for deterministic
+forecasts
+
+* Fixed bug that meant `lag_forecast()` and `shift_forecast()` did not accept 
+the harp >= v0.2.0 column naming convention
+
+# harpVis
+
+* added defaults for shinyOptions() in the point verification Shiny app
+
 # harp v0.2.1
 
 * Hotfixes for harpCore, harpIO and harpVis
