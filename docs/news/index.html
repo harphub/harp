@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">harp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +50,25 @@
       <small>Source: <a href="https://github.com/harphub/harp/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.2" id="harp-v022">harp v0.2.2<a class="anchor" aria-label="anchor" href="#harp-v022"></a></h2>
+<ul><li>Hotfixes for harpCore, harpIO, harpPoint and harpVis</li>
+</ul><div class="section level3">
+<h3 id="harpcore-0-2-2">harpCore<a class="anchor" aria-label="anchor" href="#harpcore-0-2-2"></a></h3>
+<ul><li><p><code>define_domain()</code> has been improved so that it can take a <em>proj</em> string, e.g. <code>"+proj=lcc +lon_0=15 +lat_0=63.3 +lat_1=63.3 +lat_2=63.3 +R=6371000"</code> as the <code>proj</code> argument.</p></li>
+<li><p><code>geo_reproject()</code> has been added to enable data frames with latitude and longitude columns to be expressed in projection coordinates.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="harpio-0-2-2">harpIO<a class="anchor" aria-label="anchor" href="#harpio-0-2-2"></a></h3>
+<ul><li><p>New parameters added to OBSOUL reading.</p></li>
+<li><p>Partial fix of bug that resulted in errors when extracting domain information from WRF output files - care should be taken when reading data from WRF files as this is not fully tested.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="harppoint-0-2-2">harpPoint<a class="anchor" aria-label="anchor" href="#harppoint-0-2-2"></a></h3>
+<ul><li><p>Fixed a bug that caused errors in <code><a href="https://rdrr.io/pkg/harpPoint/man/check_obs_against_fcst.html" class="external-link">check_obs_against_fcst()</a></code> for deterministic forecasts</p></li>
+<li><p>Fixed bug that meant <code><a href="https://rdrr.io/pkg/harpPoint/man/lag_forecast.html" class="external-link">lag_forecast()</a></code> and <code><a href="https://rdrr.io/pkg/harpPoint/man/shift_forecast.html" class="external-link">shift_forecast()</a></code> did not accept the harp &gt;= v0.2.0 column naming convention</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="harp-v021">harp v0.2.1<a class="anchor" aria-label="anchor" href="#harp-v021"></a></h2>
 <ul><li>Hotfixes for harpCore, harpIO and harpVis</li>
