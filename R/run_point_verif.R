@@ -51,7 +51,6 @@
 #'   scores to files.
 #' @export
 #'
-#' @examples
 run_point_verif <- function(
   dttm,
   fcst_model,
