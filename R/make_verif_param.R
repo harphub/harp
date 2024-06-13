@@ -1,0 +1,253 @@
+#' Make a parameter object for verification
+#'
+#' `make_verif_param()` makes a list of options for a verification parameter to
+#' be passed to \code{\link{run_point_verif}()}. At a minimum the parameter
+#' name is required. Other options including different names for reading the
+#' parameter from forecasts and observations; scaling; jittering; groups,
+#' thresholds and comparators for verification can be set here.
+#'
+#' Multiple parameters can be defined by wrapping calls to `make_verif_param()`
+#' in `c()`, i.e. `c(make_verif_param(...), make_verif_param(...)`.
+#'
+#' @param param The name of the parameter.
+#' @param fcst_param The name of the parameter to be used for reading forecast
+#'   data. If NULL, `param` is used.
+#' @param fcst_scaling Any scaling to apply to the forecast data. Should be set
+#'   with \code{\link{make_scaling}()}.
+#' @param fcst_jitter_func A function to jitter ensemble forecast data to take
+#'   account of observation errors. See \code{\link[harpPoint]{jitter_fcst}()}.
+#' @param obs_param The name of the parameter to be used for reading
+#' observations data. If NULL, `param` is used.
+#' @param obs_scaling Any scaling to apply to the observations data. Should be set
+#'   with \code{\link{make_scaling}()}.
+#' @param obs_min,obs_max The minimum and maximum values that an observation can
+#'   have - used in the gross error check at read time, so should be in the same
+#'   units as in the observations file.
+#' @param obs_error_sd The maximum number of standard deviations that an
+#'   observation can be different from a forecast. Used as a sort of
+#'   represntativeness check. See
+#'   \code{\link[harpPoint]{check_obs_against_fcst}()} for more details.
+#' @param verif_groups The groups for which to compute verification scores. That
+#'   is to say the stratification of the verification scores.
+#'   \code{\link[harpCore]{make_verif_groups}()} can be used to define the
+#'   verification groups. The default is for the verification to be grouped by
+#'   lead time.
+#' @param verif_thresholds The thresholds to be used for computing contingency
+#'   table based and probabilistic scores for the parameter. If different
+#'   thresholds are to be used with different comparators, `thresholds` should
+#'   be a list with the same length as `verif_comparator`.
+#' @param verif_comparator The comparator used to determine how the thresholds
+#'   define classes. By default this is `"ge"` for >=. Can also be `"lt"`, `"le"`,
+#'   `"eq"`, `"gt"`, `"between"`, or `"outside"`.
+#' @param verif_comp_inc_low,verif_comp_inc_high For the `"between"` and
+#'   `"outside"` comparators, whether to include the lowest and highest values
+#'   in the range.
+#' @param verif_circle For cyclic parameters, like wind direction, the distance
+#'   around the circle in the units of the parameter. So, for degrees this would
+#'   be `360` and radians `2 * pi`.
+#' @param verif_members Whether to verify the members individually as
+#'   deterministic forecasts for ensemble forecasts.
+#' @param vertical_coordinate For upper air parameters, the coordinate system
+#'   used in the vertical. Can be `"pressure"`, `"height"`, or `"model"`.
+#'
+#' @return A list of options for a parameter.
+#' @export
+#'
+#' @examples
+#' make_verif_param("T2m")
+#'
+#' # Add scaling for forecasts and observations
+#' make_verif_param(
+#'   "T2m",
+#'   fcst_scaling = make_scaling(-273.15, "degC"),
+#'   obs_scaling  = make_scaling(-273.15, "degC")
+#' )
+#'
+#' # Different names reading forecasts and observations
+#' make_verif_param(
+#'   "2m temperature",
+#'   fcst_param = "T2m",
+#'   obs_param  = "T2m"
+#' )
+#'
+#' # Make thresholds for wind direction with the major directions in the
+#' # middle of the class
+#' make_verif_param(
+#'   "D10m",
+#'   verif_thresholds    = list(seq(22.5, 337.5, 45), c(22.5, 337.5)),
+#'   verif_comparator    = c("between", "outside"),
+#'   verif_comp_inc_low  = c(TRUE, FALSE),
+#'   verif_comp_inc_high = c(FALSE, TRUE),
+#'   verif_circle        = 360
+#' )
+#'
+#' # Groups for different time groups and other stratifications
+#' make_verif_param(
+#'   "T2m",
+#'    verif_groups = make_verif_groups(
+#'      c("lead_time", "valid_dttm", "valid_hour"),
+#'      c("fcst_cycle", "station_group")
+#'    )
+#' )
+#'
+#' # Make multiple parameters
+#' c(
+#'   make_verif_param("T2m", verif_thresholds = seq(-25, 35, 5)),
+#'   make_verif_param("S10m", verif_thresholds = c(1, 2, 4, 8)),
+#'   make_verif_param(
+#'     "CCtot", verif_thresholds = seq(0, 8), verif_comparator = "eq"
+#'   ),
+#'   make_verif_param("T", vertical_coordinate = "pressure")
+#' )
+make_verif_param <- function(
+  param,
+  fcst_param          = NULL,
+  fcst_scaling        = NULL,
+  fcst_jitter_func    = NULL,
+  obs_param           = NULL,
+  obs_scaling         = NULL,
+  obs_min             = NULL,
+  obs_max             = NULL,
+  obs_error_sd        = NULL,
+  verif_groups        = NULL,
+  verif_thresholds    = NULL,
+  verif_comparator    = "ge",
+  verif_comp_inc_low  = TRUE,
+  verif_comp_inc_high = TRUE,
+  verif_circle        = NULL,
+  verif_members       = TRUE,
+  vertical_coordinate = NA_character_
+) {
+  out <- list()
+  out[[param]] <- list(
+    fc_param            = fcst_param,
+    fc_scaling          = fcst_scaling,
+    fc_jitter_func      = fcst_jitter_func,
+    obs_param           = obs_param,
+    obs_scaling         = obs_scaling,
+    obs_min             = obs_min,
+    obs_max             = obs_max,
+    obs_error_sd        = obs_error_sd,
+    verif_groups        = verif_groups,
+    verif_comparator    = verif_comparator,
+    verif_comp_inc_low  = verif_comp_inc_low,
+    verif_comp_inc_high = verif_comp_inc_high,
+    verif_thresholds    = verif_thresholds,
+    verif_circle        = verif_circle,
+    verif_members       = verif_members,
+    vertical_coordinate = vertical_coordinate
+  )
+  class(out) <- c("harp_verif_param", class(out))
+  out
+}
+
+#' @export
+c.harp_verif_param <- function(...) {
+  structure(NextMethod(), class = "harp_verif_param")
+}
+
+#' @inheritParams make_verif_param
+#' @export
+make_verif_defaults <- function(
+  verif_groups = "lead_time",
+  obs_error_sd = NULL
+) {
+  out <- list(verif_groups = verif_groups, obs_error_sd = obs_error_sd)
+  class(out) <- c("harp_verif_defaults", class(out))
+  out
+}
+
+#' Make a list for scaling forecasts or observations
+#'
+#' `make_scaling()` is a helper function to be used when defining the scaling
+#' for verification parameters with \code{\link{make_verif_param}}.
+#'
+#' @inheritParams harpCore::scale_param
+#' @export
+make_scaling <- function(
+  scaling,
+  new_units,
+  mult = FALSE
+) {
+
+  check_type(scaling, "numeric", "scaling")
+  check_type(new_units, "character", "new_units")
+  check_type(mult, "logical", "mult")
+
+  check_len(scaling, 1, "scaling")
+  check_len(new_units, 1, "new_units")
+  check_len(mult, 1, "mult")
+
+  list(
+    scaling   = scaling,
+    new_units = new_units,
+    mult      = mult
+  )
+}
+
+check_type <- function(x, type, arg, caller = rlang::caller_env()) {
+  check_fun <- get(paste("is", type, sep = "."))
+  if (check_fun(x)) {
+    return()
+  }
+  cli::cli_abort(c(
+    "Incorrect type for {.arg arg}.",
+    "i" = "{.arg arg} must be {.class {type}}.",
+    "x" = "You provided a {.cls class(x)} object."
+  ), call = caller)
+}
+
+check_len <- function(x, len, arg, caller = rlang::caller_env()) {
+  if (length(x) %in% len) {
+    return()
+  } else {
+    len_inform <- glue::glue_collapse(len, sep = ", ", last = " or ")
+    cli::cli_abort(c(
+      "Incorrect length for {.arg {arg}}.",
+      "i" = "{.arg {arg}} must be a length {len_inform} vector.",
+      "x" = "You provided a length {length(x)} vector."
+    ), call = caller)
+  }
+}
+
+make_thresholds <- function(thresh, comparator) {
+  if (length(comparator) == 1) {
+    if (comparator %in% c("between", "outside")) {
+      if (!is.list(thresh)) {
+        thresh <- vec_to_pairlist(thresh)
+      }
+    }
+   thresh <- list(thresh)
+   names(thresh) <- comparator
+   return(thresh)
+  }
+  if (!is.list(thresh)) {
+    thresh <- lapply(seq_along(comparator), function(x) thresh)
+  }
+  if (length(thresh) != length(comparator)) {
+    cli::cli_abort(c(
+      "Length mismatch between {.arg thresh} and {.arg comparator}",
+      "i" = paste(
+        "For more than one {.arg comparator}, {.arg thresh} must be a list of",
+        "the same length as {.arg comparator} or an atomic vector."
+      ),
+      "x" = paste(
+        "You suppiled {.arg comparator} with length {length(comparator)}",
+        "and {.arg thresh} with length {length(thresh)}."
+      )
+    ))
+  }
+  names(thresh) <- comparator
+  thresh[names(thresh) %in% c("between", "outside")] <- lapply(
+    thresh[names(thresh) %in% c("between", "outside")],
+    vec_to_pairlist
+  )
+  thresh
+}
+
+vec_to_pairlist <- function(x) {
+  lapply(
+    seq_along(x)[1:length(x) - 1],
+    function(i) x[c(i, i + 1)]
+  )
+}
