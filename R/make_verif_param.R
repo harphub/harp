@@ -185,6 +185,65 @@ make_scaling <- function(
   )
 }
 
+#' Write parameter definitions to a file
+#'
+#' Once parameter definitions have been made using
+#' \code{\link{make_verif_param}()} `write_verif_params()` can be used to
+#' save them to a file for future use. You have a choice to save as R source
+#' code, or JSON such that the files are editable outside of R, or as an rds
+#' file that can be read into an R session.
+#'
+#' @param param A list containing one or more parameter created using
+#'   \code{\link{make_verif_param}()}
+#' @param file_name The full path to the file where the parameters are to be
+#'   saved.
+#' @param file_type The type of file to save. Can be "R" for an R source file,
+#'   "rds", or "json". If one of these is the file extension in `file_name`
+#'   then `file_type` is ignored.
+#'
+#' @export
+#'
+#' @examples
+write_verif_params <- function(
+  param, file_name, file_type = c("R", "rds", "json")
+) {
+  file_type <- match.arg(file_type)
+  file_extension <- sub(
+    "\\.",
+    "",
+    regmatches(
+      file_name,
+      regexpr("\\.[a-z|A-Z]+$", file_name)
+    )
+  )
+  if (length(file_extension) > 0 && file_extension %in% c("R", "rds", "json")) {
+    file_type <- file_extension
+  } else {
+    file_type <- match.arg(file_type)
+    file_name <- paste(file_name, file_type, sep = ".")
+  }
+  cli::cli_inform(
+    "Writing params to {file_name}"
+  )
+  switch(
+    file_type,
+    "R"    = write_params_r(param, file_name),
+    "rds"  = saveRDS(param, file_name),
+    "json" = write_params_json(param, file_name)
+  )
+}
+
+write_params_r <- function(param, file_name, params_var = "params") {
+  out_file    <- file(file_name, "w")
+  source_code <- list_to_source(param)
+  source_code <- paste0(
+    params_var, "<-", "structure(\n  ", source_code,
+    ',\n  class = "harp_verif_param"\n)'
+  )
+  writeLines(source_code, out_file)
+  close(out_file)
+}
+
 check_type <- function(x, type, arg, caller = rlang::caller_env()) {
   check_fun <- get(paste("is", type, sep = "."))
   if (check_fun(x)) {
@@ -251,3 +310,89 @@ vec_to_pairlist <- function(x) {
     function(i) x[c(i, i + 1)]
   )
 }
+
+list_to_source <- function(l, indent = 2) {
+  l <- l[vapply(l, function(x) !is.null(x), logical(1))]
+  if (is.null(names(l))) {
+    elements <- lapply(l, list_element_to_source, indent = indent)
+  } else {
+    elements <- mapply(
+      list_element_to_source, l, names(l), USE.NAMES = FALSE, SIMPLIFY = FALSE,
+      MoreArgs = list(indent = indent)
+    )
+  }
+
+  paste0(
+    "list(\n",
+    paste(unlist(elements), collapse = ",\n"),
+    "\n", paste(rep(" ", indent), collapse = ""), ")"
+  )
+}
+
+list_element_to_source <- function(x, name = NULL, indent = 0) {
+  indent <- indent + 2
+  prefix <- paste(rep(" ", indent), collapse = "")
+  if (!is.null(name)) {
+    if (grepl("\\s", name)) name <- paste("`", "`", sep = name)
+    prefix <- paste0(prefix, name, " =")
+  }
+  if (is.numeric(x))   {
+    out <- num_to_source(x)
+  } else if (is.character(x)) {
+    out <- char_to_source(x)
+  } else if (is.logical(x)) {
+    out <- lgl_to_source(x)
+  } else if (is.function(x)) {
+    out <- fun_to_source(x)
+  } else if (is.list(x)) {
+    out <- list_to_source(x, indent)
+  }
+  paste(prefix, out)
+}
+
+num_to_source <- function(num) {
+  num <- as.character(num)
+  num[is.na(num)] <- "NA_real_"
+  if (length(num) == 1) {
+    return(num)
+  }
+  paste0(
+    "c(",
+    paste(num, collapse = ", "),
+    ")"
+  )
+}
+
+char_to_source <- function(char) {
+  char[is.na(char)] <- "NA_character_"
+  if (length(char) == 1) {
+    out <- paste('"', '"', sep = char)
+  } else {
+    out <- paste0(
+      'c("',
+      paste(char, collapse = '", "'),
+      '")'
+    )
+  }
+  gsub('"NA_character_"', 'NA_character_', out)
+}
+
+lgl_to_source <- function(lgl) {
+  lgl <- as.character(lgl)
+  lgl[is.na(lgl)] <- "NA"
+  if (length(lgl) == 1) {
+    return(lgl)
+  }
+  paste0(
+    "c(",
+    paste(lgl, collapse = ", "),
+    ")"
+  )
+}
+
+fun_to_source <- function(x, indent) {
+  x <- utils::capture.output(print(x))
+  x <- grep("<bytecode:|<environment:", x, invert = TRUE, value = TRUE)
+  paste(x, collapse = paste0("\n", paste(rep(" ", indent), collapse = "")))
+}
+
