@@ -146,6 +146,11 @@ c.harp_verif_param <- function(...) {
   structure(NextMethod(), class = "harp_verif_param")
 }
 
+#' @export
+`[.harp_verif_param` <- function(x, i, ...) {
+  structure(NextMethod(), class = "harp_verif_param")
+}
+
 #' @inheritParams make_verif_param
 #' @export
 make_verif_defaults <- function(

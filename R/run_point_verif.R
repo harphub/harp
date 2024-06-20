@@ -387,8 +387,23 @@ do_point_verif <- function(
     grps <- dflts$verif_groups
   }
 
-  if (is.list(grps) && sort(names(grps)) == c("groups", "time_groups")) {
+  if (
+    is.list(grps) &&
+    !is.null(names(grps)) &&
+    sort(names(grps)) == c("groups", "time_groups")
+  ) {
     grps <- do.call(harpCore::make_verif_groups, grps)
+  }
+
+  # Make modifications to data depending on groups
+  grp_names <- unique(unlist(grps))
+
+  if (any(grepl("valid_hour|valid_day|valid_month|valid_year", grp_names))) {
+    fcst <- harpCore::expand_date(fcst, "valid_dttm")
+  }
+
+  if (!is.null(station_groups) && is.element("station_group", grp_names)) {
+    fcst <- harpCore::join_station_groups(fcst, station_groups)
   }
 
   # Select the correct verification function
@@ -428,6 +443,10 @@ do_point_verif <- function(
       circle         = param_list$verif_circle,
       verify_members = param_list$verif_members
     )
+  )
+
+  verif <- mapply(
+    add_thresh_type, verif, comps$comparator, SIMPLIFY = FALSE
   )
 
   verif <- harpPoint::bind_point_verif(verif)
@@ -641,4 +660,21 @@ no_data_test <- function(x, msg, ...) {
   if (no_data) {
     cli::cli_abort(msg, call = rlang::caller_env())
   }
+}
+
+add_thresh_type <- function(x, comp) {
+  thresh_type <- switch(
+    comp,
+    "lt"      = ,
+    "le"      = ,
+    "ge"      = ,
+    "gt"      = "thresholds",
+    "eq"      = ,
+    "between" = ,
+    "outside" = "classes"
+  )
+  attrs <- attributes(x)
+  x <- lapply(x, dplyr::mutate, Type = thresh_type)
+  attributes(x) <- attrs
+  x
 }
