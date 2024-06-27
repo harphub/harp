@@ -440,6 +440,7 @@ do_point_verif <- function(
       include_high   = comps$include_high[i],
       thresholds     = thresholds[[i]],
       groupings      = grps,
+      summary        = i == 1,
       circle         = param_list$verif_circle,
       verify_members = param_list$verif_members
     )
@@ -517,6 +518,9 @@ fix_fcst_classes <- function(x, ens_mean_as_det) {
   }
 
   ens_idx <- which(get_fcst_class(x) == "ens")
+  if (length(ens_idx) < 1) {
+    return(x)
+  }
   num_mbrs <- vapply(
     x[ens_idx],
     function(y) length(grep(mbr_regex, colnames(y))),
@@ -673,8 +677,10 @@ add_thresh_type <- function(x, comp) {
     "between" = ,
     "outside" = "classes"
   )
-  attrs <- attributes(x)
-  x <- lapply(x, dplyr::mutate, Type = thresh_type)
-  attributes(x) <- attrs
+  thresh_scores <- grep("threshold", names(x))
+  if (length(thresh_scores) < 1) {
+    return(x)
+  }
+  x[thresh_scores] <- lapply(x[thresh_scores], dplyr::mutate, Type = thresh_type)
   x
 }
