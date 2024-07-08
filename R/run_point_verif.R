@@ -221,13 +221,17 @@ do_point_verif <- function(
 
   vc <- as_vertical_coord(param_list$vertical_coordinate)
 
+  ## Get the common cases, read the observations and then loop over the
+  ## forecast models, reading only the required data - this should save
+  ## on memory usage without adding too much time expense - it may even
+  ## be faster in the long run as only the required data are read in.
+
   cli::cli_inform(c(
-    "i" = "Reading forecast data {cli::symbol$arrow_right}",
+    "i" = "Getting common cases across all forecast models",
     ""
   ))
-  # Read the forecasts
 
-  fcst <- harpIO::read_point_forecast(
+  fcst_cases <- harpIO::read_point_forecast(
     dttm                = dttm,
     fcst_model          = fc_models,
     parameter           = fc_prm,
@@ -237,62 +241,28 @@ do_point_verif <- function(
     stations            = stations,
     file_path           = fc_data_dir,
     file_template       = fc_file_template,
-    vertical_coordinate = vc
+    vertical_coordinate = vc,
+    meta_only           = TRUE
   )
 
-  no_data_test(fcst, "None of the requested forecast data found in file(s).")
-
-  # Need to check if all elements of fcst are the same type (i.e. all det or
-  # all ens)
-
-  cls <- get_fcst_class(fcst)
-
-  if (is.element("not_fcst", cls)) {
-    bad_idx <- which(cls == "not_fcst")
-    err <- glue::glue(
-      "\"",
-      glue::glue_collapse(
-        fc_models[bad_idx], sep = "\", \"", last = "\" and \""
-      ),
-      "\""
-    )
-    cli::cli_abort(c(
-      "Not all data are harp forecast data.",
-      "x" = "Non harp forecast data for {.arg fcst_model} = {err}"
-    ))
-  }
-
-
-  fcst <- fix_fcst_classes(fcst, ens_mean_as_det)
-  cls  <- get_fcst_class(fcst)
-
-  cls <- unique(cls)
-
-  # Select the common cases - need to make sure that if a vertical profile,
-  # the vertical level should be included in param_list.
-
   if (is.na(vc)) {
-    fcst <- harpCore::common_cases(fcst)
+    fcst_cases <- harpCore::common_cases(
+      fcst_cases, rows_only = TRUE, "valid_dttm"
+    )
   } else {
     vertical_col <- as_vertical_col(vc)
-    fcst <- harpCore::common_cases(fcst, {{vertical_col}})
+    fcst_cases <- harpCore::common_cases(
+      fcst_cases, rows_only = TRUE, "valid_dttm", {{vertical_col}}
+    )
   }
 
   no_data_test(
-    fcst,
+    fcst_cases,
     paste(
       "No common cases found between forecast models",
       glue::glue_collapse(fc_models, sep = ", ", last = " and ")
     )
   )
-
-  # Scale the forecast
-  if (!is.null(param_list$fc_scaling)) {
-    fcst <- do.call(
-      harpCore::scale_param,
-      c(list(x = fcst), param_list$fc_scaling)
-    )
-  }
 
   # Read the observations
   obs_prm <- param_list$obs_param
@@ -307,9 +277,9 @@ do_point_verif <- function(
   ))
 
   obs <- harpIO::read_point_obs(
-    dttm                = harpCore::unique_valid_dttm(fcst),
+    dttm                = harpCore::unique_valid_dttm(fcst_cases),
     parameter           = obs_prm,
-    stations            = harpCore::unique_stations(fcst),
+    stations            = harpCore::unique_stations(fcst_cases),
     obs_path            = obs_data_dir,
     min_allowed         = param_list$obs_min,
     max_allowed         = param_list$obs_max,
@@ -317,6 +287,14 @@ do_point_verif <- function(
   )
 
   no_data_test(obs, "None of the requested observations data found in file(s).")
+
+  # Join the observations to the cases
+  common_cols <- intersect(colnames(fcst_cases), colnames(obs))
+  obs <- dplyr::inner_join(fcst_cases, obs, by = common_cols)
+
+  rm(fcst_cases)
+
+  no_data_test(obs, "No forecast - observations pairs found after joining.")
 
   # Scale the observations
   if (!is.null(param_list$obs_scaling)) {
@@ -330,127 +308,218 @@ do_point_verif <- function(
     )
   }
 
+  # Loop over forecast models, read in the data and do the verification
 
-  # Join observations to forecast
-  cli::cli_inform(c(
-    "",
-    "i" = "Joining forecast and observations data {cli::symbol$arrow_right}",
-    ""
-  ))
-  fcst <- harpCore::join_to_fcst(fcst, obs)
+  #result <- list()
 
-  no_data_test(fcst, "No forecast - observations pairs found after joining.")
+  #for (fc_model in fc_models) {
 
-  # Check for observation errors, comparing forecasts with observations
-  error_sd <- param_list$obs_error_sd
-  if (is.null(error_sd)) {
-    error_sd <- dflts$obs_error_sd
-  }
+    # cli::cli_inform(c(
+    #   "",
+    #   "---",
+    #   "i" = "Doing verification for {fc_model}",
+    #   "---",
+    #   ""
+    # ))
 
-  cli::cli_inform(c(
-    "",
-    "i" = "Checking observations for errors {cli::symbol$arrow_right}",
-    ""
-  ))
+    cli::cli_inform(c(
+      "i" = "Reading forecast data for {cli::symbol$arrow_right}",
+      ""
+    ))
+    # Read the forecasts
 
-  fcst <- harpPoint::check_obs_against_fcst(
-    fcst,
-    {{obs_prm}},
-    num_sd_allowed = error_sd
-  )
+    fcst <- harpIO::read_point_forecast(
+      dttm                = harpCore::unique_fcst_dttm(obs),
+      fcst_model          = fc_models,
+      parameter           = fc_prm,
+      lead_time           = ld_times,
+      members             = members,
+      lags                = lags,
+      stations            = harpCore::unique_stations(obs),
+      file_path           = fc_data_dir,
+      file_template       = fc_file_template,
+      vertical_coordinate = vc
+    )
 
-  no_data_test(fcst, "All observations failed check against forecasts.")
+    no_data_test(fcst, "None of the requested forecast data found in file(s).")
 
-  # Send removed cases to a log file?
+    # Need to check if all elements of fcst are the same type (i.e. all det or
+    # all ens)
 
-  # Rename the observations column (this is useful in providing a final name for
-  # the parameter that will be used in the verification file name and thus the
-  # shiny app)
-  fcst <- dplyr::rename(fcst, {{param_name}} := {{obs_prm}})
+    cls <- get_fcst_class(fcst)
 
-  # Jitter the forecast to take account of observation errors
-  if (cls == "ens" && is.function(param_list$fc_jitter_func)) {
-    fun_args <- names(formals(param_list$fc_jitter_func))
-    fun_args <- fun_args[!fun_args == "..."]
-    if (length(fun_args) > 1) {
-      obs_col <- param_name
-    } else {
-      obs_col <- NULL
+    if (is.element("not_fcst", cls)) {
+      bad_idx <- which(cls == "not_fcst")
+      err <- glue::glue(
+        "\"",
+        glue::glue_collapse(
+          fc_models[bad_idx], sep = "\", \"", last = "\" and \""
+        ),
+        "\""
+      )
+      cli::cli_abort(c(
+        "Not all data are harp forecast data.",
+        "x" = "Non harp forecast data for {.arg fcst_model} = {err}"
+      ))
     }
-    fcst <- harpPoint::jitter_fcst(
-      fcst, param_list$fc_jitter_func, {{obs_col}}
-    )
-  }
 
-  grps <- param_list$verif_groups
-  if (is.null(grps)) {
-    grps <- dflts$verif_groups
-  }
 
-  if (
-    is.list(grps) &&
-    !is.null(names(grps)) &&
-    sort(names(grps)) == c("groups", "time_groups")
-  ) {
-    grps <- do.call(harpCore::make_verif_groups, grps)
-  }
+    fcst <- fix_fcst_classes(fcst, ens_mean_as_det)
+    cls  <- get_fcst_class(fcst)
 
-  # Make modifications to data depending on groups
-  grp_names <- unique(unlist(grps))
+    cls <- unique(cls)
 
-  if (any(grepl("valid_hour|valid_day|valid_month|valid_year", grp_names))) {
-    fcst <- harpCore::expand_date(fcst, "valid_dttm")
-  }
+    # Scale the forecast
+    if (!is.null(param_list$fc_scaling)) {
+      fcst <- do.call(
+        harpCore::scale_param,
+        c(list(x = fcst), param_list$fc_scaling)
+      )
+    }
 
-  if (!is.null(station_groups) && is.element("station_group", grp_names)) {
-    fcst <- harpCore::join_station_groups(fcst, station_groups)
-  }
 
-  # Select the correct verification function
-  verif_func <- switch(
-    cls,
-    "det" = harpPoint::det_verify,
-    "ens" = harpPoint::ens_verify
-  )
+    # Join observations to forecast
+    cli::cli_inform(c(
+      "",
+      "i" = "Joining forecast and observations data {cli::symbol$arrow_right}",
+      ""
+    ))
+    fcst <- harpCore::join_to_fcst(fcst, obs)
 
-  # Get parameter and include_low, include_high in the right form
-  comps <- check_comparator(
-    param_list[
-      c("verif_comparator", "verif_comp_inc_low", "verif_comp_inc_high")
-    ]
-  )
 
-  # Thresholds should be a list to allow for multiple comparators
-  thresholds <- make_thresholds(param_list$verif_thresholds, comps$comparator)
+    # Check for observation errors, comparing forecasts with observations
+    error_sd <- param_list$obs_error_sd
+    if (is.null(error_sd)) {
+      error_sd <- dflts$obs_error_sd
+    }
 
-  idx <- seq_along(comps$comparator)
+    cli::cli_inform(c(
+      "",
+      "i" = "Checking observations for errors {cli::symbol$arrow_right}",
+      ""
+    ))
 
-  cli::cli_inform(c(
-    "",
-    "i" = "Doing the verification {cli::symbol$arrow_right}",
-    ""
-  ))
-  verif <- lapply(
-    idx,
-    function(i) verif_func(
+    fcst <- harpPoint::check_obs_against_fcst(
       fcst,
-      {{param_name}},
-      comparator     = comps$comparator[i],
-      include_low    = comps$include_low[i],
-      include_high   = comps$include_high[i],
-      thresholds     = thresholds[[i]],
-      groupings      = grps,
-      summary        = i == 1,
-      circle         = param_list$verif_circle,
-      verify_members = param_list$verif_members
+      {{obs_prm}},
+      num_sd_allowed = error_sd
     )
-  )
 
-  verif <- mapply(
-    add_thresh_type, verif, comps$comparator, SIMPLIFY = FALSE
-  )
+    no_data_test(fcst, "All observations failed check against forecasts.")
+
+    # Send removed cases to a log file?
+
+    # Rename the observations column (this is useful in providing a final name for
+    # the parameter that will be used in the verification file name and thus the
+    # shiny app)
+    fcst <- dplyr::rename(fcst, {{param_name}} := {{obs_prm}})
+
+    # Jitter the forecast to take account of observation errors
+    if (cls == "ens" && is.function(param_list$fc_jitter_func)) {
+      fun_args <- names(formals(param_list$fc_jitter_func))
+      fun_args <- fun_args[!fun_args == "..."]
+      if (length(fun_args) > 1) {
+        obs_col <- param_name
+      } else {
+        obs_col <- NULL
+      }
+      fcst <- harpPoint::jitter_fcst(
+        fcst, param_list$fc_jitter_func, {{obs_col}}
+      )
+    }
+
+    grps <- param_list$verif_groups
+    if (is.null(grps)) {
+      grps <- dflts$verif_groups
+    }
+
+    if (
+      is.list(grps) &&
+        !is.null(names(grps)) &&
+        sort(names(grps)) == c("groups", "time_groups")
+    ) {
+      grps <- do.call(harpCore::make_verif_groups, grps)
+    }
+
+    # Make modifications to data depending on groups
+    grp_names <- unique(unlist(grps))
+
+    if (any(grepl("valid_hour|valid_day|valid_month|valid_year", grp_names))) {
+      fcst <- harpCore::expand_date(fcst, "valid_dttm")
+    }
+
+
+
+    if (is.element("station_group", grp_names)) {
+      if (is.null(station_groups)) {
+        cli::cli_inform(c(
+          "",
+          "!" = paste(
+            "{.arg station_group} found in groups, but no {.arg station_group}",
+            "data frame supplied"
+          ),
+        "i" = "Using default {.var station_groups}.",
+        ""
+        ))
+        station_groups <- harpCore::station_groups
+      }
+      fcst <- harpCore::join_station_groups(fcst, station_groups)
+    }
+
+
+    # Select the correct verification function
+    verif_func <- switch(
+      cls,
+      "det" = harpPoint::det_verify,
+      "ens" = harpPoint::ens_verify
+    )
+
+    # Get parameter and include_low, include_high in the right form
+    comps <- check_comparator(
+      param_list[
+        c("verif_comparator", "verif_comp_inc_low", "verif_comp_inc_high")
+      ]
+    )
+
+    # Thresholds should be a list to allow for multiple comparators
+    thresholds <- make_thresholds(param_list$verif_thresholds, comps$comparator)
+
+    idx <- seq_along(comps$comparator)
+
+    # cli::cli_inform(c(
+    #   "",
+    #   "i" = "{cli::col_green('::Computing verification for fcst_model ', {fc_model}, '::')}",
+    #   ""
+    # ))
+
+    verif <- lapply(
+      idx,
+      function(i) verif_func(
+        fcst,
+        {{param_name}},
+        comparator     = comps$comparator[i],
+        include_low    = comps$include_low[i],
+        include_high   = comps$include_high[i],
+        thresholds     = thresholds[[i]],
+        groupings      = grps,
+        summary        = i == 1,
+        circle         = param_list$verif_circle,
+        verify_members = param_list$verif_members
+      )
+    )
+
+    verif <- mapply(
+      add_thresh_type, verif, comps$comparator, SIMPLIFY = FALSE
+    )
+
+    #result[[fc_model]] <- harpPoint::bind_point_verif(verif)
+
+  #}
 
   verif <- harpPoint::bind_point_verif(verif)
+
+  attributes(verif) <- add_point_locs(attributes(verif), fcst)
+
 
   if (is.null(vrf_data_dir)) {
     return_data <- TRUE
@@ -683,4 +752,19 @@ add_thresh_type <- function(x, comp) {
   }
   x[thresh_scores] <- lapply(x[thresh_scores], dplyr::mutate, Type = thresh_type)
   x
+}
+
+add_point_locs <- function(verif_attrs, data) {
+  verif_attrs[["point_locations"]] <- dplyr::summarise(
+    harpCore::common_cases(
+      data,
+      "SID", "lat", "latitude", "lon", "long", "longitude",
+      "elev", "elevation", "station_group",
+      "-fcst_dttm", "-lead_time", "-p", "-z", "-m", "-h",
+      rows_only = TRUE
+    ),
+    dplyr::across(dplyr::everything(), function(x) mean(x)),
+    .by = dplyr::any_of(c("SID", "station_group"))
+  )
+  verif_attrs
 }
