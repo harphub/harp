@@ -24,6 +24,28 @@
 #' @param station_groups A data frame defining groups each station belongs to.
 #'   Should have column names "SID" for station ID and "station_group" for the
 #'   group name.
+#' @param ens_mean_as_det Logical. For ensembles, should the ensemble mean be
+#'   verified as a deterministic forecast.
+#' @param dttm_rounding The multiple to which to round valid date-times. This
+#'   should be a number followed "s", "m", "h", or "d" for seconds, minutes,
+#'   hours and days. This is useful for aggregating data over time periods
+#'   when stratifying verification by valid_dttm.
+#' @param dttm_rounding_dirn The direction in which to round date-times. Can be
+#'   "nearest", "up" or "down". For "nearest", the rounding is centred on
+#'   `dttm_rounding`. Where there is an even number of date-times to be
+#'   aggregated, the averaging window favours date-times before the rounding
+#'   time. For example, if rounding date-times to "6h", the aggregation for 06
+#'   UTC will take in 03, 04, 05, 06, 07 and 08 UTC, and the aggregation for 12
+#'   UTC will take in 09, 10, 11, 12, 13 and 14 UTC etc. For "up" the rounding
+#'   is for a window for all times up to and including `dttm_rounding` and for
+#'   "down" the rounding is for a window starting at `dttm_rounding`.
+#' @param dttm_rounding_offset The offset to be applied to `dttm_rounding`. This
+#'   should be a number followed "s", "m", "h", or "d" for seconds, minutes,
+#'   hours and days. This is used to centre the rounding. For example, if
+#'   `dttm_rounding` = "1d", the rounding will be centred on 00 UTC. If you want
+#'   it to be centred on 12 UTC, you would supply an offset of "12h". Note that
+#'   the offset is applied backwards in time, so if you want to centre on 06
+#'   UTC, for example, the offset should be "18h".
 #' @param fcst_path The path for the forecast files.
 #' @param fcst_template The template for the forecast files.
 #' @param fcst_format The format of the forecast files. Currently this is
@@ -55,23 +77,26 @@ run_point_verif <- function(
   dttm,
   fcst_model,
   params,
-  lead_time       = seq(0, 48, 3),
-  members         = NULL,
-  lags            = "0s",
-  stations        = NULL,
-  station_groups  = NULL,
-  ens_mean_as_det = FALSE,
-  fcst_path       = getwd(),
-  fcst_template   = "fctable",
-  fcst_format     = "fctable",
-  obs_path        = getwd(),
-  obs_template    = "obstable",
-  obs_format      = "obstable",
-  out_path        = NULL,
-  out_template    = "point_verif",
-  out_format      = "rds",   # make extendable to include json
-  defaults        = make_verif_defaults(),
-  return_data     = TRUE
+  lead_time            = seq(0, 48, 3),
+  members              = NULL,
+  lags                 = "0s",
+  stations             = NULL,
+  station_groups       = NULL,
+  ens_mean_as_det      = FALSE,
+  dttm_rounding        = NULL,
+  dttm_rounding_dirn   = c("nearest", "up", "down"),
+  dttm_rounding_offset = 0,
+  fcst_path            = getwd(),
+  fcst_template        = "fctable",
+  fcst_format          = "fctable",
+  obs_path             = getwd(),
+  obs_template         = "obstable",
+  obs_format           = "obstable",
+  out_path             = NULL,
+  out_template         = "point_verif",
+  out_format           = "rds",   # make extendable to include json
+  defaults             = make_verif_defaults(),
+  return_data          = TRUE
 ) {
 
   if (!inherits(params, "harp_verif_param")) {
@@ -103,6 +128,9 @@ run_point_verif <- function(
       stations,
       station_groups,
       ens_mean_as_det,
+      dttm_rounding,
+      dttm_rounding_dirn,
+      dttm_rounding_offset,
       fcst_path,
       fcst_template,
       fcst_format,
@@ -188,6 +216,9 @@ do_point_verif <- function(
   stations,
   station_groups,
   ens_mean_as_det,
+  dttm_rounding,
+  dttm_rounding_dirn,
+  dttm_rounding_offset,
   fc_data_dir,
   fc_file_template,
   fc_file_format,
@@ -472,6 +503,16 @@ do_point_verif <- function(
     } else {
       grps <- c(grps, vertical_col)
     }
+  }
+
+  # Round valid_dttm
+  if (is.element("valid_dttm", grp_names)) {
+    fcst <- dplyr::mutate(
+      fcst, valid_dttm = harpCore::round_dttm(
+        .data[["valid_dttm"]], dttm_rounding,
+        dttm_rounding_dirn, dttm_rounding_offset
+      )
+    )
   }
 
 
@@ -784,3 +825,4 @@ add_point_locs <- function(verif_attrs, data) {
   )
   verif_attrs
 }
+
