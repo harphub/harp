@@ -111,6 +111,8 @@ run_point_verif <- function(
     return_data <- TRUE
   }
 
+  dttm_rounding_dirn <- match.arg(dttm_rounding_dirn)
+
 
   ## ALWAYS use map... if return_data = FALSE return "SUCCESS" if no errors,
   # otherwise the error will be returned.
