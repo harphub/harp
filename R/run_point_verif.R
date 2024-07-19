@@ -323,7 +323,7 @@ do_point_verif <- function(
 
   # Join the observations to the cases
   common_cols <- intersect(colnames(fcst_cases), colnames(obs))
-  obs <- dplyr::inner_join(fcst_cases, obs, by = common_cols)
+  obs <- harpCore::deharp(dplyr::inner_join(fcst_cases, obs, by = common_cols))
 
   rm(fcst_cases)
 
