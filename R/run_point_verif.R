@@ -508,7 +508,7 @@ do_point_verif <- function(
   }
 
   # Round valid_dttm
-  if (is.element("valid_dttm", grp_names)) {
+  if (is.element("valid_dttm", grp_names) && !is.null(dttm_rounding)) {
     fcst <- dplyr::mutate(
       fcst, valid_dttm = harpCore::round_dttm(
         .data[["valid_dttm"]], dttm_rounding,
