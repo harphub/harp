@@ -24,6 +24,11 @@
 #' @param station_groups A data frame defining groups each station belongs to.
 #'   Should have column names "SID" for station ID and "station_group" for the
 #'   group name.
+#' @param main_fcst_model The `fcst_model` to treat as the main model. If not
+#'   NULL, the stations will first be selected from this model and only these
+#'   stations will be read from other `fcst_model`s. This will speed up the
+#'   reading of data. In general the model with the smallest domain should be
+#'   chosen as `main_fcst_model`. Will be ignored if `stations` is not NULL.
 #' @param ens_mean_as_det Logical. For ensembles, should the ensemble mean be
 #'   verified as a deterministic forecast.
 #' @param dttm_rounding The multiple to which to round valid date-times. This
@@ -82,6 +87,7 @@ run_point_verif <- function(
   lags                 = "0s",
   stations             = NULL,
   station_groups       = NULL,
+  main_fcst_model      = NULL,
   ens_mean_as_det      = FALSE,
   dttm_rounding        = NULL,
   dttm_rounding_dirn   = c("nearest", "up", "down"),
@@ -129,6 +135,7 @@ run_point_verif <- function(
       lags,
       stations,
       station_groups,
+      main_fcst_model,
       ens_mean_as_det,
       dttm_rounding,
       dttm_rounding_dirn,
@@ -217,6 +224,7 @@ do_point_verif <- function(
   lags,
   stations,
   station_groups,
+  main_fcst_model,
   ens_mean_as_det,
   dttm_rounding,
   dttm_rounding_dirn,
@@ -254,12 +262,37 @@ do_point_verif <- function(
 
   vc <- as_vertical_coord(param_list$vertical_coordinate)
 
+  # Select SIDs from the main fcst model.
+
+  if (is.null(stations) && !is.null(main_fcst_model)) {
+    fc_files <- harpIO::generate_filenames(
+      file_path  = fc_data_dir,
+      file_date  = dttm,
+      parameter  = fc_prm,
+      fcst_model = main_fcst_model
+    )
+
+    fc_files <- fc_files[file.exists(fc_files)]
+    if (length(fc_files) > 0) {
+      cli::cli_inform(c(
+        "",
+        "i" = paste(
+          "Getting stations for {.arg main_fcst_model}:",
+          "\"{main_fcst_model}\""
+        ),
+        ""
+      ))
+      stations <- Reduce(union, lapply(fc_files, sids_from_file))
+    }
+  }
+
   ## Get the common cases, read the observations and then loop over the
   ## forecast models, reading only the required data - this should save
   ## on memory usage without adding too much time expense - it may even
   ## be faster in the long run as only the required data are read in.
 
   cli::cli_inform(c(
+    "",
     "i" = "Getting common cases across all forecast models",
     ""
   ))
@@ -828,3 +861,11 @@ add_point_locs <- function(verif_attrs, data) {
   verif_attrs
 }
 
+sids_from_file <- function(file_name) {
+  cli::cli_inform(paste(cli::col_br_yellow("Querying:"), "{file_name}"))
+  db   <- DBI::dbConnect(RSQLite::SQLite(), file_name)
+  fc   <- dplyr::tbl(db, "FC")
+  sids <- dplyr::pull(dplyr::distinct(dplyr::select(fc, "SID")), "SID")
+  DBI::dbDisconnect(db)
+  sids
+}

@@ -13,7 +13,11 @@ run_point_verif(
   lags = "0s",
   stations = NULL,
   station_groups = NULL,
+  main_fcst_model = NULL,
   ens_mean_as_det = FALSE,
+  dttm_rounding = NULL,
+  dttm_rounding_dirn = c("nearest", "up", "down"),
+  dttm_rounding_offset = 0,
   fcst_path = getwd(),
   fcst_template = "fctable",
   fcst_format = "fctable",
@@ -64,6 +68,38 @@ vector of station ID numbers. Set to NULL to retrieve all stations.}
 \item{station_groups}{A data frame defining groups each station belongs to.
 Should have column names "SID" for station ID and "station_group" for the
 group name.}
+
+\item{main_fcst_model}{The `fcst_model` to treat as the main model. If not
+NULL, the stations will first be selected from this model and only these
+stations will be read from other `fcst_model`s. This will speed up the
+reading of data. In general the model with the smallest domain should be
+chosen as `main_fcst_model`. Will be ignored if `stations` is not NULL.}
+
+\item{ens_mean_as_det}{Logical. For ensembles, should the ensemble mean be
+verified as a deterministic forecast.}
+
+\item{dttm_rounding}{The multiple to which to round valid date-times. This
+should be a number followed "s", "m", "h", or "d" for seconds, minutes,
+hours and days. This is useful for aggregating data over time periods
+when stratifying verification by valid_dttm.}
+
+\item{dttm_rounding_dirn}{The direction in which to round date-times. Can be
+"nearest", "up" or "down". For "nearest", the rounding is centred on
+`dttm_rounding`. Where there is an even number of date-times to be
+aggregated, the averaging window favours date-times before the rounding
+time. For example, if rounding date-times to "6h", the aggregation for 06
+UTC will take in 03, 04, 05, 06, 07 and 08 UTC, and the aggregation for 12
+UTC will take in 09, 10, 11, 12, 13 and 14 UTC etc. For "up" the rounding
+is for a window for all times up to and including `dttm_rounding` and for
+"down" the rounding is for a window starting at `dttm_rounding`.}
+
+\item{dttm_rounding_offset}{The offset to be applied to `dttm_rounding`. This
+should be a number followed "s", "m", "h", or "d" for seconds, minutes,
+hours and days. This is used to centre the rounding. For example, if
+`dttm_rounding` = "1d", the rounding will be centred on 00 UTC. If you want
+it to be centred on 12 UTC, you would supply an offset of "12h". Note that
+the offset is applied backwards in time, so if you want to centre on 06
+UTC, for example, the offset should be "18h".}
 
 \item{fcst_path}{The path for the forecast files.}
 
