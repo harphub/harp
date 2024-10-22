@@ -1,0 +1,7 @@
+params         = file: /home/andrewts/harp-packages/harp/inst/test-data/params.txt
+lead_time      = 0, 3..66
+stations       = file: stations.csv
+station_groups = file: station_groups.csv
+fcst_path      = /path/to/fctable
+obs_path       = /path/to/obstable
+defaults       = params

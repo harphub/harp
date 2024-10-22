@@ -1,0 +1,457 @@
+{
+  "10m Wind Speed": {
+    "fc_param": "S10m",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "S10m",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 100,
+    "obs_error_sd": 6,
+    "verif_groups": null,
+    "verif_comparator": ["ge", "between"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [1.5, 3.3, 5.5, 8, 10.8, 13.9, 24.5],
+      [0, 1.5, 3.3, 5.5, 8, 10.8, 13.9, 24.5, "Inf"]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "10m Wind Direction": {
+    "fc_param": "D10m",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "D10m",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 360,
+    "obs_error_sd": null,
+    "verif_groups": null,
+    "verif_comparator": ["between", "outside"],
+    "verif_comp_inc_low": [true, false],
+    "verif_comp_inc_high": [false, true],
+    "verif_thresholds": [
+      [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5],
+      [22.5, 337.5]
+    ],
+    "verif_circle": 360,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "2m Temperature": {
+    "fc_param": "T2m",
+    "fc_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "fc_jitter_func": null,
+    "obs_param": "T2m",
+    "obs_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "obs_min": 223,
+    "obs_max": 333,
+    "obs_error_sd": 6,
+    "verif_groups": null,
+    "verif_comparator": ["ge", "between"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [-30, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30],
+      ["-Inf", -30, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, "Inf"]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "2m Dewpoint": {
+    "fc_param": "Td2m",
+    "fc_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "fc_jitter_func": null,
+    "obs_param": "Td2m",
+    "obs_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "obs_min": 223,
+    "obs_max": 333,
+    "obs_error_sd": 6,
+    "verif_groups": null,
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "2m Relative Humidity": {
+    "fc_param": "RH2m",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "RH2m",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 101,
+    "obs_error_sd": 6,
+    "verif_groups": null,
+    "verif_comparator": ["ge", "between"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [30, 50, 65, 75, 85, 95, 100],
+      [0, 30, 50, 65, 75, 85, 95, 100, "Inf"]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "2m Specific Humidity": {
+    "fc_param": "Q2m",
+    "fc_scaling": {
+      "scaling": 1000,
+      "new_units": "g/kg",
+      "mult": true
+    },
+    "fc_jitter_func": null,
+    "obs_param": "Q2m",
+    "obs_scaling": {
+      "scaling": 1000,
+      "new_units": "g/kg",
+      "mult": true
+    },
+    "obs_min": 0,
+    "obs_max": 0.05,
+    "obs_error_sd": 6,
+    "verif_groups": null,
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "Total Cloud Cover": {
+    "fc_param": "CCtot",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "CCtot",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 8,
+    "obs_error_sd": null,
+    "verif_groups": null,
+    "verif_comparator": ["ge", "eq"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [1, 2, 3, 4, 5, 6, 7, 8],
+      [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "Mean Sea Level Pressure": {
+    "fc_param": "Pmsl",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "Pmsl",
+    "obs_scaling": null,
+    "obs_min": 900,
+    "obs_max": 1100,
+    "obs_error_sd": null,
+    "verif_groups": null,
+    "verif_comparator": ["le", "between"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [980, 985, 990, 995, 1000, 1005, 1010],
+      ["-Inf", 980, 985, 990, 995, 1000, 1005, 1010, "Inf"]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "6h Precipitation": {
+    "fc_param": "AccPcp6h",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "AccPcp6h",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 750,
+    "obs_error_sd": null,
+    "verif_groups": null,
+    "verif_comparator": ["ge", "between"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [0.1, 0.5, 1, 2, 4, 8, 16, 32],
+      [0, 0.1, 0.5, 1, 2, 4, 8, 16, 32, "Inf"]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "12h Precipitation": {
+    "fc_param": "AccPcp12h",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "AccPcp12h",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 1000,
+    "obs_error_sd": null,
+    "verif_groups": null,
+    "verif_comparator": ["ge", "between"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [0.1, 0.5, 1, 2, 4, 8, 16, 32, 64],
+      [0, 0.1, 0.5, 1, 2, 4, 8, 16, 32, 64, "Inf"]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "24h Precipitation": {
+    "fc_param": "AccPcp24h",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "AccPcp24h",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 1000,
+    "obs_error_sd": null,
+    "verif_groups": null,
+    "verif_comparator": ["ge", "between"],
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": false,
+    "verif_thresholds": [
+      [0.1, 0.5, 1, 2, 4, 8, 16, 32, 64, 128],
+      [0, 0.1, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, "Inf"]
+    ],
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "NA"
+  },
+  "Upper Air Temperature": {
+    "fc_param": "T",
+    "fc_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "fc_jitter_func": null,
+    "obs_param": "T",
+    "obs_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "obs_min": 173,
+    "obs_max": 333,
+    "obs_error_sd": null,
+    "verif_groups": [
+      null,
+      "lead_time",
+      "valid_hour",
+      "valid_dttm",
+      ["lead_time", "fcst_cycle"],
+      ["valid_hour", "fcst_cycle"],
+      ["valid_dttm", "fcst_cycle"]
+    ],
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "pressure"
+  },
+  "Upper Air Dewpoint": {
+    "fc_param": "Td",
+    "fc_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "fc_jitter_func": null,
+    "obs_param": "Td",
+    "obs_scaling": {
+      "scaling": -273.15,
+      "new_units": "degC",
+      "mult": false
+    },
+    "obs_min": 173,
+    "obs_max": 333,
+    "obs_error_sd": null,
+    "verif_groups": [
+      null,
+      "lead_time",
+      "valid_hour",
+      "valid_dttm",
+      ["lead_time", "fcst_cycle"],
+      ["valid_hour", "fcst_cycle"],
+      ["valid_dttm", "fcst_cycle"]
+    ],
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "pressure"
+  },
+  "Upper Air Wind Speed": {
+    "fc_param": "S",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "S",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 150,
+    "obs_error_sd": null,
+    "verif_groups": [
+      null,
+      "lead_time",
+      "valid_hour",
+      "valid_dttm",
+      ["lead_time", "fcst_cycle"],
+      ["valid_hour", "fcst_cycle"],
+      ["valid_dttm", "fcst_cycle"]
+    ],
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "pressure"
+  },
+  "Upper Air Wind Direction": {
+    "fc_param": "D",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "D",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 360,
+    "obs_error_sd": null,
+    "verif_groups": [
+      null,
+      "lead_time",
+      "valid_hour",
+      "valid_dttm",
+      ["lead_time", "fcst_cycle"],
+      ["valid_hour", "fcst_cycle"],
+      ["valid_dttm", "fcst_cycle"]
+    ],
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": 360,
+    "verif_members": true,
+    "vertical_coordinate": "pressure"
+  },
+  "Upper Air Geopotential Height": {
+    "fc_param": "Z",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "Z",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 50000,
+    "obs_error_sd": null,
+    "verif_groups": [
+      null,
+      "lead_time",
+      "valid_hour",
+      "valid_dttm",
+      ["lead_time", "fcst_cycle"],
+      ["valid_hour", "fcst_cycle"],
+      ["valid_dttm", "fcst_cycle"]
+    ],
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "pressure"
+  },
+  "Upper Air Relative Humidity": {
+    "fc_param": "RH",
+    "fc_scaling": null,
+    "fc_jitter_func": null,
+    "obs_param": "RH",
+    "obs_scaling": null,
+    "obs_min": 0,
+    "obs_max": 100,
+    "obs_error_sd": null,
+    "verif_groups": [
+      null,
+      "lead_time",
+      "valid_hour",
+      "valid_dttm",
+      ["lead_time", "fcst_cycle"],
+      ["valid_hour", "fcst_cycle"],
+      ["valid_dttm", "fcst_cycle"]
+    ],
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "pressure"
+  },
+  "Upper Air Specific Humidity": {
+    "fc_param": "Q",
+    "fc_scaling": {
+      "scaling": 1000,
+      "new_units": "g/kg",
+      "mult": true
+    },
+    "fc_jitter_func": null,
+    "obs_param": "Q",
+    "obs_scaling": {
+      "scaling": 1000,
+      "new_units": "g/kg",
+      "mult": true
+    },
+    "obs_min": 0,
+    "obs_max": 0.05,
+    "obs_error_sd": null,
+    "verif_groups": [
+      null,
+      "lead_time",
+      "valid_hour",
+      "valid_dttm",
+      ["lead_time", "fcst_cycle"],
+      ["valid_hour", "fcst_cycle"],
+      ["valid_dttm", "fcst_cycle"]
+    ],
+    "verif_comparator": "ge",
+    "verif_comp_inc_low": true,
+    "verif_comp_inc_high": true,
+    "verif_thresholds": null,
+    "verif_circle": null,
+    "verif_members": true,
+    "vertical_coordinate": "pressure"
+  }
+}

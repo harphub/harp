@@ -1,0 +1,29 @@
+param               = 10m Wind Speed
+fcst_param          = S10m
+obs_param           = S10m
+obs_min             = 0
+obs_max             = 100
+obs_error_sd        = 6
+verif_groups        = NULL; lead_time; fcst_cycle, station_group
+verif_thresholds    = 1.5, 3.3, 5.5, 8, 10.8, 13.9, 24.5; 0, 1.5, 3.3, 5.5, 8, 10.8, 13.9, 24.5, Inf
+verif_comparator    = ge, between
+verif_comp_inc_low  = TRUE
+verif_comp_inc_high = FALSE
+
+param               = 2m Temperature
+fcst_param          = T2m
+fcst_scaling        = -273.15, degC
+obs_param           = T2m
+obs_scaling         = -273.15, degC
+obs_min             = 223
+obs_max             = 333
+obs_error_sd        = 6
+verif_thresholds    = -30, -20, -15..30; -Inf, -30, -20, -15..30, Inf
+verif_comparator    = ge, between
+verif_comp_inc_low  = TRUE
+verif_comp_inc_high = FALSE
+
+param               = defaults
+verif_groups        = lead_time, valid_dttm, valid_hour; fcst_cycle, station_group
+obs_error_sd        = 6
+

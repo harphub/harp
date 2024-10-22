@@ -151,6 +151,15 @@ c.harp_verif_param <- function(...) {
   structure(NextMethod(), class = "harp_verif_param")
 }
 
+#' Make defualts for point verification
+#'
+#' `make_verif_defaults()` can be used to set default values for point
+#' verification regardless of the parameter. This is currently restricted to
+#' verification groups and the number of standard deviations allowed between
+#' observations and forecasts for observations to be accepted into the
+#' verification. All other options are set at the parameter level using
+#' \code{\link{make_verif_param()}}
+#'
 #' @inheritParams make_verif_param
 #' @export
 make_verif_defaults <- function(
@@ -238,11 +247,62 @@ write_verif_params <- function(
   )
 }
 
+write_params_json <- function(param, file_name) {
+  param <- lapply(
+    param,
+    lapply,
+    function(x) {
+      if (is.function(x)) {
+        fun_to_source(x)
+      } else {
+        x
+      }
+    }
+  )
+  jsonlite::write_json(
+    param,
+    file_name,
+    auto_unbox = TRUE,
+    pretty     = TRUE,
+    force      = TRUE,
+    null       = "null",
+    na         = "string"
+  )
+}
+
+read_params_json <- function(file_name) {
+  prm <- jsonlite::read_json(file_name, simplifyVector = TRUE)
+  prm <- lapply(prm, lapply, function(x) ifelse(x == "NA", NA_character_, x))
+  prm <- lapply(prm, lapply, function(x) {if (length(x) < 1) {NULL} else {x}})
+  prm <- lapply(
+    prm,
+    lapply,
+    function(x) {
+      if (any(grepl("^function", x))) {
+        eval(parse(text = paste(x, collapse = "")))
+      } else {
+        x
+      }
+    }
+  )
+  defaults <- prm$defaults
+  list(
+    params = structure(
+      prm[names(prm) != "deafaults"], class = "harp_verif_param"
+    ),
+    defaults = if (is.null(defaults)) {
+      NULL
+    } else {
+      do.call(make_verif_defaults, defaults)
+    }
+  )
+}
+
 write_params_r <- function(param, file_name, params_var = "params") {
   out_file    <- file(file_name, "w")
   source_code <- list_to_source(param)
   source_code <- paste0(
-    params_var, "<-", "structure(\n  ", source_code,
+    params_var, " <- ", "structure(\n  ", source_code,
     ',\n  class = "harp_verif_param"\n)'
   )
   writeLines(source_code, out_file)
