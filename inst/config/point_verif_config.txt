@@ -1,0 +1,32 @@
+# Setup file
+# All files should be precede by file:
+# For numeric sequences use .. The step is the difference between to the
+# two preceding values. e.g. 0, 3..48 will give you 0-48 with a step of 3.
+
+params               = file: path/to/params # Should generally be a file - you shoud use make_verif_param()
+defaults             = params # Set to params if included in the params file, otherwise a file
+
+lead_time            = 0, 3..66
+
+stations             = file: stations.csv # can be a vector or a csv file with a SID column
+station_groups       = file: station_groups.csv # Should be a csv file with SID and station_group columns
+
+dttm_rounding        = NULL
+dttm_rounding_dirn   = nearest
+dttm_rounding_offset = 0
+
+members              = NULL
+lags                 = NULL
+ens_mean_as_det      = FALSE
+
+fcst_path            = /path/to/fctable
+fcst_template        = fctable
+fcst_format          = fctable
+
+obs_path             = /path/to/obstable
+obs_template         = obstable
+obs_format           = obstable
+
+out_path             = /path/to/verification
+out_template         = point_verif
+out_format           = rds

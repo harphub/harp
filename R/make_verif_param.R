@@ -222,14 +222,7 @@ write_verif_params <- function(
   param, file_name, file_type = c("R", "rds", "json")
 ) {
   file_type <- match.arg(file_type)
-  file_extension <- sub(
-    "\\.",
-    "",
-    regmatches(
-      file_name,
-      regexpr("\\.[a-z|A-Z]+$", file_name)
-    )
-  )
+  file_extension <- harpIO::get_file_ext(file_name)
   if (length(file_extension) > 0 && file_extension %in% c("R", "rds", "json")) {
     file_type <- file_extension
   } else {
@@ -306,6 +299,13 @@ write_params_r <- function(param, file_name, params_var = "params") {
     ',\n  class = "harp_verif_param"\n)'
   )
   writeLines(source_code, out_file)
+  close(out_file)
+}
+
+write_params_txt <- function(param, file_name) {
+  out_file   <- file(file_name, "w")
+  params_txt <- list_to_txt(param)
+  writeLines(params_txt, out_file)
   close(out_file)
 }
 
@@ -461,3 +461,71 @@ fun_to_source <- function(x, indent) {
   paste(x, collapse = paste0("\n", paste(rep(" ", indent), collapse = "")))
 }
 
+list_to_txt <- function(l) {
+  l <- mapply(
+    function(key, value) c(list(param = key), value),
+    names(l), l,
+    USE.NAMES = FALSE, SIMPLIFY = FALSE
+  )
+
+  l <- lapply(
+    l,
+    function(x) lapply(x, function(y) {
+      if(is.list(y)) {
+        el_to_string(y)
+      } else {
+        vec_to_string(y)
+      }
+    })
+  )
+
+  l <- lapply(l, fix_scaling)
+
+  key_length <- max(nchar(Reduce(union, lapply(l, names))))
+
+  Reduce(
+    function(x, y) c(x, "", y),
+    lapply(
+      l,
+      function(x) unlist(
+        mapply(
+          function(key, value) {
+            paste(harpIO:::pad_string(key, key_length), value, sep = " = ")
+          },
+          names(x), x,
+          USE.NAMES = FALSE, SIMPLIFY = FALSE
+        )
+      )
+    )
+  )
+}
+
+vec_to_string <- function(vec) {
+  if (is.null(vec)) {
+    return("NULL")
+  }
+  paste(vec, collapse = ", ")
+}
+
+el_to_string <- function(el) {
+  paste(lapply(el, vec_to_string), collapse = "; ")
+}
+
+fix_scaling <- function(x) {
+  x[grepl("scaling", names(x))] <- lapply(
+    x[grepl("scaling", names(x))], function(y) gsub(";", ",", y)
+  )
+  x
+}
+
+pad_string <- function(x, string_length, text = " ") {
+  if (nchar(text) != 1) {
+    stop("`text` must be a 1 character string")
+  }
+  if (nchar(x) > string_length) {
+    stop("`x` must have <= ", string_length, " characters")
+  }
+  out <- paste0(rep(as.character(text), string_length), collapse = "")
+  substr(out, 1, nchar(x)) <- x
+  out
+}

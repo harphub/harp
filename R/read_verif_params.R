@@ -1,9 +1,19 @@
-read_config <- function(file_name) {
-  read_text_setup(file_name)
-}
-
+#' Verification parameter files
+#'
+#' `read_verif_params()` reads a parameter file for verification. This can be a
+#' file that contains R code, a text file or a json file.
+#'
+#' @param file_name The name of the parameters file
+#'
+#' @return A named list
+#' @export
+#'
+#' @examples
+#' read_verif_params(system.file("config", "define_params.R"))
+#' read_verif_params(system.file("config", "params.txt"))
+#' read_verif_params(system.file("config", "params.json"))
 read_verif_params <- function(file_name) {
-  if (get_file_ext(file_name) == "R") {
+  if (harpIO::get_file_ext(file_name) == "R") {
     source(file_name, local = TRUE)
     return(list(
       params = get("params"),
@@ -14,9 +24,14 @@ read_verif_params <- function(file_name) {
   }
 }
 
-get_file_ext <- function(file_name) {
-  pos <- regexpr("\\.([[:alnum:]]+)$", file_name)
-  ifelse(pos > -1L, substring(file_name, pos + 1L), "")
+#'
+#' @param file_name
+#'
+#' @export
+#' @rdname make_verif_params
+point_verif_params_script <- function(file_name) {
+  file.copy(system.file("config", "define_params.R"), file_name)
+  usethis::edit_file(file_name)
 }
 
 split_on_empty <- function(x) {
@@ -30,14 +45,31 @@ split_on_empty <- function(x) {
 }
 
 read_text_setup <- function(file_name, is_param_file = FALSE) {
-  setup <- split_on_empty(readLines(file_name))
-    setup <- lapply(
+  setup <- split_on_empty(remove_comments_and_no_equals(readLines(file_name)))
+  if (!is_param_file) {
+    setup <- unlist(setup, recursive = FALSE)
+    setup <- setup[vapply(setup, function(x) nchar(x) > 0, logical(1))]
+  }
+  setup <- lapply(
     setup,
     function(x) unlist(lapply(x, parse_setup_line), recursive = FALSE)
   )
   if (!is_param_file) {
     return(unlist(setup, recursive = FALSE))
   }
+  setup <- lapply(
+    setup,
+    function(x) {
+      names(x) <- gsub("^fc_", "fcst_", names(x))
+      x[
+        vapply(x, function(y) length(y) == 1 && y == "NULL", logical(1))
+      ] <- NULL
+      x[
+        vapply(x, function(y) length(y) == 1 && y == "NA", logical(1))
+      ] <- NA
+      x
+    }
+  )
   if (any(vapply(setup, function(x) x$param == "defaults", logical(1)))) {
     params_idx <- vapply(setup, function(x) x$param != "defaults", logical(1))
     return(list(
@@ -47,7 +79,16 @@ read_text_setup <- function(file_name, is_param_file = FALSE) {
       defaults = as_verif_defaults(setup[[which(!params_idx)]])
     ))
   }
-  list(params = do.call(c, lapply(setup, function(x) do.call(make_verif_param, x))))
+
+  list(
+    params = do.call(c, lapply(setup, function(x) do.call(make_verif_param, x)))
+  )
+}
+
+remove_comments_and_no_equals <- function(x) {
+  x <- x[vapply(x, function(l) !grepl("^#", l), logical(1))]
+  x <- lapply(x, function(l) sub("\\s*$", "", sub("#(.*)$", "", l)))
+  x[vapply(x, function(l) grepl("^\\s*$|=", l), logical(1))]
 }
 
 parse_setup_line <- function(x) {
@@ -106,14 +147,17 @@ parse_setup_line <- function(x) {
 
     res[[1]] <- unlist(res[[1]])
 
-    if (grepl("_scaling", names(res))) {
-      res[[1]]             <- as.list(res[[1]])
-      res[[1]][[1]]        <- as.numeric(res[[1]][[1]])
-      names(res[[1]][1:2]) <- c("scaling", "new_units")
+    if (
+      !is.null(res[[1]]) &&
+        any(res[[1]] != "NULL") &&
+        grepl("_scaling", names(res))
+    ) {
+      res[[1]]        <- as.list(res[[1]])
+      res[[1]][[1]]   <- as.numeric(res[[1]][[1]])
+      names(res[[1]]) <- c("scaling", "new_units", "mult")[1:length(res[[1]])]
 
       if (length(res[[1]]) == 3) {
         res[[1]][[3]]      <- as.logical(res[[1]][[3]])
-        names(res[[1]][3]) <- "mult"
       }
 
       res[[1]] <- do.call(make_scaling, res[[1]])

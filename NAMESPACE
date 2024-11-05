@@ -2,8 +2,13 @@
 
 S3method("[",harp_verif_param)
 S3method(c,harp_verif_param)
+export(edit_config)
+export(make_point_verif_config)
 export(make_scaling)
 export(make_verif_defaults)
 export(make_verif_param)
+export(point_verif_params_script)
+export(read_config)
+export(read_verif_params)
 export(run_point_verif)
 export(write_verif_params)
