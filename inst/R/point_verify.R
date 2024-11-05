@@ -40,8 +40,8 @@ handle_config_file <- function(config_file) {
     config$params <- harp::read_verif_params(config$params)
   }
 
-  if (params$defaults == "params") {
-    params$defaults <- config$params$defaults
+  if (config$defaults == "params") {
+    config$defaults <- config$params$defaults
   }
 
   if (
@@ -59,23 +59,24 @@ handle_config_file <- function(config_file) {
   ) {
     config$station_groups <- read.csv(config$station_groups)
   }
+  config
 }
 
 
-fcst_model <- strsplit(args$fcst_model, ",")
+fcst_model <- gsub("^\\s*|\\s*$", "", strsplit(args$fcst_model, ",")[[1]])
 
 # Use 00 3 days ago if no start_dttm
 if (is.null(args$start_dttm)) {
-  start_dttm <- round(Sys.time() - as.difftime(3, unit = "days"), "days")
+  start_dttm <- harpCore::as_str_dttm(round(Sys.time() - as.difftime(3, unit = "days"), "days"))
 } else {
-  start_dttm <- as_dttm(args$start_dttm)
+  start_dttm <- args$start_dttm
 }
 
 # If no end_dttm, use start_dttm
 if (is.null(args$end_dttm)) {
   end_dttm <- start_dttm
 } else {
-  end_dttm <- as_dttm(args$end_dttm)
+  end_dttm <- args$end_dttm
 }
 
 # If no by, set to 1 day
@@ -94,27 +95,32 @@ if (is.null(args$lead_time)) {
 config <- config[!names(config) == "lead_time"]
 
 # If no lead_time set to seq(0, 48, 3)
-if (is.null(lead_time)) {
+if (is.null(lead_time) && is.null(args$lead_time)) {
   lead_time <- seq(0, 48, 3)
 } else {
-  lt <- suppressWarnings(as.numeric(strsplit(args$lead_time, ",")[[1]]))
-  if (any(is.na(lt))) {
-    cli::cli_abort(c(
-      "Non numeric values found in lead time"
-    ))
+  if (is.null(lead_time)) {
+    lt <- suppressWarnings(as.numeric(strsplit(args$lead_time, ",")[[1]]))
+    if (any(is.na(lt))) {
+      cli::cli_abort(c(
+        "Non numeric values found in lead time"
+      ))
+    }
+    if (length(lt) != 3) {
+      cli::cli_abort(c(
+        "Invalid lead time specification",
+        "i" = "Lead time must be 3 numeric comma separated values",
+        "x" = "You supplied {args$lead_time}"
+      ))
+    }
+    lead_time <- seq(lt[1], lt[2], lt[3])
   }
-  if (length(lt) != 3) {
-    cli::cli_abort(c(
-      "Invalid lead time specification",
-      "i" = "Lead time must be 3 numeric comma separated values",
-      "x" = "You supplied {args$lead_time}"
-    ))
-  }
-  lead_time <- seq(lt[1], lt[2], lt[3])
 }
 
 ### Do the verification
 
+if (is.null(config$lags)) {
+  config$lags <- "0s"
+}
 
 do.call(
   harp::run_point_verif,
@@ -123,7 +129,8 @@ do.call(
     list(fcst_model  = fcst_model),
     list(lead_time   = lead_time),
     config,
-    list(return_data = FALSE)
+    list(main_fcst_model = args$main_fcst_model),
+    list(return_data     = FALSE)
   )
 )
 

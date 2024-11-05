@@ -609,7 +609,7 @@ do_point_verif <- function(
     return_data <- TRUE
   } else {
     # Save
-    harpIO::save_point_verif(verif, vrf_data_dir)
+    harpIO::save_point_verif(verif, vrf_data_dir, vrf_file_template, "0755")
   }
 
   if (return_data) {
