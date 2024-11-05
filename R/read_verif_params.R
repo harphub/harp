@@ -35,6 +35,9 @@ point_verif_params_script <- function(file_name) {
 }
 
 split_on_empty <- function(x) {
+  if (nchar(x[[length(x)]]) > 0) {
+    x[[length(x) + 1]] <- ""
+  }
   idx <- which(nchar(x) < 1)
   if (length(idx) < 1) {
     return(list(x))
