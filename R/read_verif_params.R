@@ -55,8 +55,16 @@ read_text_setup <- function(file_name, is_param_file = FALSE) {
     function(x) unlist(lapply(x, parse_setup_line), recursive = FALSE)
   )
   if (!is_param_file) {
-    return(unlist(setup, recursive = FALSE))
+    return(lapply(
+      unlist(setup, recursive = FALSE),
+      function(x) {
+        if (length(x) == 1 && x == "NULL") x <- NULL
+        if (length(x) == 1 && x == "NA") x <- NA
+        x
+      }
+    ))
   }
+
   setup <- lapply(
     setup,
     function(x) {
@@ -70,6 +78,7 @@ read_text_setup <- function(file_name, is_param_file = FALSE) {
       x
     }
   )
+
   if (any(vapply(setup, function(x) x$param == "defaults", logical(1)))) {
     params_idx <- vapply(setup, function(x) x$param != "defaults", logical(1))
     return(list(
