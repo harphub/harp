@@ -587,6 +587,7 @@ do_point_verif <- function(
       thresholds     = thresholds[[i]],
       groupings      = grps,
       summary        = i == 1,
+      hexbin         = i == 1,
       circle         = param_list$verif_circle,
       verify_members = param_list$verif_members
     )
