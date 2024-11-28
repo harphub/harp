@@ -529,7 +529,7 @@ do_point_verif <- function(
       ))
       station_groups <- harpCore::station_groups
     }
-    fcst <- harpCore::join_station_groups(fcst, station_groups)
+    fcst <- harpCore::join_multi_groups(fcst, station_groups)
   }
 
   if (!is.na(vc)) {

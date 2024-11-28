@@ -134,11 +134,3 @@ do.call(
   )
 )
 
-### Need to add reading of a config file that can specify - for more general use!
-###  - Parameter definitions (as file) to set the variable params
-###  - Which parameters (from params) to verify
-###  - Members and lags
-###  - Station Ids to select
-###  - Station group defintitions (as a CSV file?)
-###  - Whether to verifiy the ensemble mean as deterministic
-
