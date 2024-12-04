@@ -102,8 +102,13 @@ run_point_verif <- function(
   out_template         = "point_verif",
   out_format           = "rds",   # make extendable to include json
   defaults             = make_verif_defaults(),
+  show_progress        = TRUE,
   return_data          = TRUE
 ) {
+
+  if (!interactive()) {
+    show_progress <- FALSE
+  }
 
   if (!inherits(params, "harp_verif_param")) {
     cli::cli_abort(c(
@@ -150,6 +155,7 @@ run_point_verif <- function(
       out_path,
       out_template,
       out_format,
+      show_progress,
       return_data
     ))
   )
@@ -239,6 +245,7 @@ do_point_verif <- function(
   vrf_data_dir,
   vrf_file_template,
   vrf_file_format,
+  show_progress,
   return_data
 ) {
 
@@ -589,7 +596,8 @@ do_point_verif <- function(
       summary        = i == 1,
       hexbin         = i == 1,
       circle         = param_list$verif_circle,
-      verify_members = param_list$verif_members
+      verify_members = param_list$verif_members,
+      show_progress  = show_progress
     )
   )
 
