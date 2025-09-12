@@ -24,14 +24,45 @@ read_verif_params <- function(file_name) {
   }
 }
 
+#' Copy and open an example verification parameters file
 #'
-#' @param file_name
+#' Create a new verification parameters from an example. You can choose whether
+#' to have this file as an R script (the recommended type), a json file or a
+#' text file. The example files are quite comprehensive so should be edited
+#' to your needs.
+#'
+#' @param file_name The name of the file you want to make. It should either
+#'   have no extension, or an extension that matches `type`.
+#' @param type The type of file to create. Can be "R" (the default), "json", or
+#'   "txt".
 #'
 #' @export
-#' @rdname make_verif_params
-point_verif_params_script <- function(file_name) {
-  file.copy(system.file("config", "define_params.R"), file_name)
-  usethis::edit_file(file_name)
+make_verif_params_file <- function(file_name, type = c("R", "json", "txt")) {
+  type <- match.arg(type)
+  file_ext <- harpIO::get_file_ext(file_name)
+  if (nchar(file_ext) < 1) {
+    file_name <- paste(file_name, type, sep = ".")
+  } else {
+    if (file_ext != type) {
+      cli::cli_abort(c(
+        "File extension does not match type.",
+        "x" = paste(
+          "You suppied a file name with extension {cli::col_red(file_ext)}",
+          "and {.arg type} = {cli::col_red(type)}."
+        ),
+        "i" = "Either do not include an extension or make it match {.arg type}."
+      ))
+    }
+  }
+
+  file.copy(
+    system.file(
+      "config", paste0("define_params", type), package = "harp"
+    ),
+    file_name
+  )
+
+  file_edit(file_name)
 }
 
 split_on_empty <- function(x) {

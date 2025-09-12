@@ -28,6 +28,7 @@ run_point_verif(
   out_template = "point_verif",
   out_format = "rds",
   defaults = make_verif_defaults(),
+  show_progress = TRUE,
   return_data = TRUE
 )
 }

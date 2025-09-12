@@ -10,14 +10,13 @@ make_point_verif_config(config_file_name)
 edit_config(config_file_name)
 }
 \arguments{
-\item{config_file_name}{The name of the configuration file}
+\item{config_file_name}{The name of the configuration file to be made}
 }
 \description{
 These functions help you to make, edit and read configuration files for
 verification in harp. `make_*_verif_config()` will open an example
-configuration that you can edit and save. `edit_config()` is a simple
-wrapper around \code{\link[usethis]{edit_file}} so can actually be used to
-open and edit any file. More documentation about the variables in the
+configuration that you can edit and save. `edit_config()` opens an editor
+for an existing file. More documentation about the variables in the
 configuration file can found in \code{\link{run_point_verif()}}.
 }
 \details{

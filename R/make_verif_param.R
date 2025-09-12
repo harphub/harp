@@ -216,8 +216,6 @@ make_scaling <- function(
 #'   then `file_type` is ignored.
 #'
 #' @export
-#'
-#' @examples
 write_verif_params <- function(
   param, file_name, file_type = c("R", "rds", "json")
 ) {

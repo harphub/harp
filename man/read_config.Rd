@@ -2,13 +2,17 @@
 % Please edit documentation in R/verif_config.R
 \name{read_config}
 \alias{read_config}
-\title{Title}
+\title{Read a configuration file}
 \usage{
 read_config(config_file_name)
 }
 \arguments{
-\item{config_file_name}{}
+\item{config_file_name}{The full path to the configuration file}
+}
+\value{
+A named list
 }
 \description{
-Title
+A configuration file is used to provide information for a verification
+run, such as paths, file templates, file formats, and other basic settings.
 }
