@@ -773,15 +773,21 @@ fix_fcst_classes <- function(x, ens_mean_as_det) {
   # method for single member ensembles - currently just tells you it can't do it
   # For now will just have to say it's not possible to combine deterministic
   # and ensemble in the same verification.
-  ens_models <- quoted_strings(names(x)[ens_idx])
-  det_models <- quoted_strings(names(x)[!seq_along(x) %in% ens_idx])
-  cli::cli_abort(c(
-    "x" = paste(
-      "Cannot combine deterministic and ensemble forecasts",
-      "in a single verification."
-    ),
-    "i" = "{ens_models} are ensembles and {det_models} are deterministic."
-  ))
+  num_ens_models <- length(ens_idx)
+  num_det_models <- length(x) - num_ens_models
+
+  if (all(c(num_ens_models, num_det_models) != 0)) {
+    ens_models <- quoted_strings(names(x)[ens_idx])
+    det_models <- quoted_strings(names(x)[!seq_along(x) %in% ens_idx])
+    cli::cli_abort(c(
+      "x" = paste(
+        "Cannot combine deterministic and ensemble forecasts",
+        "in a single verification."
+      ),
+      "i" = "{ens_models} are ensembles and {det_models} are deterministic."
+    ))
+  }
+  return(x)
 }
 
 quoted_strings <- function(x) {
