@@ -1,12 +1,13 @@
 # Setup file
 # All files should be precede by file:
-# For numeric sequences use .. The step is the difference between to the
+# For numeric sequences use .. The step is the difference between the
 # two preceding values. e.g. 0, 3..48 will give you 0-48 with a step of 3.
 
-params               = file: path/to/params # Should generally be a file - you shoud use make_verif_param()
-defaults             = params # Set to params if included in the params file, otherwise a file
+param_defs           = file: harp_point_verif_params.R # Should generally be a file - you shoud use make_verif_param()
+defaults             = param_defs # Set to param_defs if included in the param_defs file, otherwise a file
 
 lead_time            = 0, 3..66
+lead_time_unit       = h
 
 stations             = file: stations.csv # can be a vector or a csv file with a SID column
 station_groups       = file: station_groups.csv # Should be a csv file with SID and station_group columns
@@ -30,3 +31,24 @@ obs_format           = obstable
 out_path             = /path/to/verification
 out_template         = point_verif
 out_format           = rds
+
+params = {
+  10m Wind Speed
+  10m Wind Direction
+  2m Temperature
+  2m Dewpoint
+  2m Relative Humidity
+  2m Specific Humidity
+  Total Cloud Cover
+  Mean Sea Level Pressure
+  6h Precipitation
+  12h Precipitation
+  24h Precipitation
+  Upper Air Temperature
+  Upper Air Dewpoint
+  Upper Air Wind Speed
+  Upper Air Wind Direction
+  Upper Air Geopotential Height
+  Upper Air Relative Humidity
+  Upper Air Specific Humidity
+}

@@ -7,7 +7,8 @@
 run_point_verif(
   dttm,
   fcst_model,
-  params,
+  param_defs,
+  params = NULL,
   lead_time = seq(0, 48, 3),
   members = NULL,
   lags = "0s",
@@ -41,8 +42,12 @@ vector of equally spaced date-time strings.}
 \item{fcst_model}{The forecast model to read - this is typically used to
 construct the file name. Can be a character vector of model names.}
 
-\item{params}{The parameters for which to do the verification. These need to
-be set using \code{\link{make_verif_params}()}.}
+\item{param_defs}{The parameter definitions to be used in the verification.
+These need to be set using \code{\link{make_verif_params}()}.}
+
+\item{params}{The parameters from `param_defs` for which to do the
+verification. Set to `NULL` (the default) to use all parameters in
+`param_defs`.}
 
 \item{lead_time}{The lead times to be retrieved. Can be used to construct the
 file names and to set which lead times are retrieved.}
@@ -81,8 +86,8 @@ verified as a deterministic forecast.}
 
 \item{dttm_rounding}{The multiple to which to round valid date-times. This
 should be a number followed "s", "m", "h", or "d" for seconds, minutes,
-hours and days. This is useful for aggregating data over time periods
-when stratifying verification by valid_dttm.}
+hours and days. This is useful for aggregating data over time periods when
+stratifying verification by valid_dttm.}
 
 \item{dttm_rounding_dirn}{The direction in which to round date-times. Can be
 "nearest", "up" or "down". For "nearest", the rounding is centred on

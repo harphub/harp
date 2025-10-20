@@ -35,9 +35,12 @@ read_verif_params <- function(file_name) {
 #'   have no extension, or an extension that matches `type`.
 #' @param type The type of file to create. Can be "R" (the default), "json", or
 #'   "txt".
+#' @param edit Logical. Whether to open the file in an editor.
 #'
 #' @export
-make_verif_params_file <- function(file_name, type = c("R", "json", "txt")) {
+make_verif_params_file <- function(
+  file_name, type = c("R", "json", "txt"), edit = TRUE
+) {
   type <- match.arg(type)
   file_ext <- harpIO::get_file_ext(file_name)
   if (nchar(file_ext) < 1) {
@@ -57,12 +60,14 @@ make_verif_params_file <- function(file_name, type = c("R", "json", "txt")) {
 
   file.copy(
     system.file(
-      "config", paste0("define_params", type), package = "harp"
+      "config", paste0("example_params.", type), package = "harp"
     ),
     file_name
   )
 
-  file_edit(file_name)
+  if (edit) {
+    file_edit(file_name)
+  }
 }
 
 split_on_empty <- function(x) {
@@ -131,7 +136,43 @@ read_text_setup <- function(file_name, is_param_file = FALSE) {
 remove_comments_and_no_equals <- function(x) {
   x <- x[vapply(x, function(l) !grepl("^#", l), logical(1))]
   x <- lapply(x, function(l) sub("\\s*$", "", sub("#(.*)$", "", l)))
+  x <- get_vector(x)
   x[vapply(x, function(l) grepl("^\\s*$|=", l), logical(1))]
+}
+
+get_vector <- function(x) {
+  vec_start  <- which(vapply(x, \(y) grepl("\\{", y), logical(1)))
+  vec_end    <- which(vapply(x, \(y) grepl("\\}", y), logical(1)))
+  bad_vector <- FALSE
+  if (length(vec_start) != length(vec_end)) {
+    bad_vector <- TRUE
+  }
+  if (!all(pmin(vec_start, vec_end) == vec_start)) {
+    bad_vector <- TRUE
+  }
+  if (bad_vector) {
+    cli::cli_abort("Unmatched `{` or `}` in config file", call = NULL)
+  }
+  vecs <- vapply(
+    seq_along(vec_start),
+    function(i) sub("[[:space:]]*= ,", "=", gsub(",$", "",
+      paste(
+        gsub("\\{|\\}", "", unlist(
+          lapply(
+            x[vec_start[i]:vec_end[i]],
+            function(x) sub("[[:space:]]*", "", x)
+          )
+        )),
+        collapse = ","
+      )
+    )),
+    character(1)
+  )
+
+  for (i in seq_along(vec_start)) {
+    x[[vec_start[i]]] <- vecs[i]
+  }
+  x
 }
 
 parse_setup_line <- function(x) {

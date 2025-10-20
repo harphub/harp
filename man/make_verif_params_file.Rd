@@ -4,7 +4,7 @@
 \alias{make_verif_params_file}
 \title{Copy and open an example verification parameters file}
 \usage{
-make_verif_params_file(file_name, type = c("R", "json", "txt"))
+make_verif_params_file(file_name, type = c("R", "json", "txt"), edit = TRUE)
 }
 \arguments{
 \item{file_name}{The name of the file you want to make. It should either
@@ -12,6 +12,8 @@ have no extension, or an extension that matches `type`.}
 
 \item{type}{The type of file to create. Can be "R" (the default), "json", or
 "txt".}
+
+\item{edit}{Logical. Whether to open the file in an editor.}
 }
 \description{
 Create a new verification parameters from an example. You can choose whether

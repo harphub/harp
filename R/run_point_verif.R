@@ -19,8 +19,11 @@
 #'
 #' @inheritParams harpIO::read_point_forecast
 #'
-#' @param params The parameters for which to do the verification. These need to
-#'   be set using \code{\link{make_verif_params}()}.
+#' @param param_defs The parameter definitions to be used in the verification.
+#'   These need to be set using \code{\link{make_verif_params}()}.
+#' @param params The parameters from `param_defs` for which to do the
+#'   verification. Set to `NULL` (the default) to use all parameters in
+#'   `param_defs`.
 #' @param station_groups A data frame defining groups each station belongs to.
 #'   Should have column names "SID" for station ID and "station_group" for the
 #'   group name.
@@ -33,8 +36,8 @@
 #'   verified as a deterministic forecast.
 #' @param dttm_rounding The multiple to which to round valid date-times. This
 #'   should be a number followed "s", "m", "h", or "d" for seconds, minutes,
-#'   hours and days. This is useful for aggregating data over time periods
-#'   when stratifying verification by valid_dttm.
+#'   hours and days. This is useful for aggregating data over time periods when
+#'   stratifying verification by valid_dttm.
 #' @param dttm_rounding_dirn The direction in which to round date-times. Can be
 #'   "nearest", "up" or "down". For "nearest", the rounding is centred on
 #'   `dttm_rounding`. Where there is an even number of date-times to be
@@ -81,7 +84,8 @@
 run_point_verif <- function(
   dttm,
   fcst_model,
-  params,
+  param_defs,
+  params               = NULL,
   lead_time            = seq(0, 48, 3),
   members              = NULL,
   lags                 = "0s",
@@ -110,7 +114,7 @@ run_point_verif <- function(
     show_progress <- FALSE
   }
 
-  if (!inherits(params, "harp_verif_param")) {
+  if (!inherits(param_defs, "harp_verif_param")) {
     cli::cli_abort(c(
       "{.arg params} must have a class of {.cls harp_verif_param}.",
       "x" = "You supplied an object with class {.cls {class(params)}}.",
@@ -124,12 +128,26 @@ run_point_verif <- function(
 
   dttm_rounding_dirn <- match.arg(dttm_rounding_dirn)
 
+  if (!is.null(params)) {
+    unfound_params <- setdiff(params, names(param_defs))
+    if (length(unfound_params) > 0) {
+      cli::cli_warn(c(
+        "Some {.arg params} not found in {.arg param_defs}",
+        "i" = "{unfound_params}."
+      ))
+    }
+
+    param_defs <- param_defs[intersect(params, names(param_defs))]
+    if (length(param_defs) < 1) {
+      cli::cli_abort("No {.arg param_defs} for requested {.arg params}.")
+    }
+  }
 
   ## ALWAYS use map... if return_data = FALSE return "SUCCESS" if no errors,
   # otherwise the error will be returned.
 
   out <- purrr::imap(
-    params,
+    param_defs,
     function(x, y) try(do_point_verif(
       x,
       y,
@@ -361,6 +379,19 @@ do_point_verif <- function(
 
   no_data_test(obs, "None of the requested observations data found in file(s).")
 
+  if (!is.null(attr(obs, "bad_obs")) && nrow(attr(obs, "bad_obs")) > 0) {
+
+    cat("\n")
+    cli::cli_alert_warning(c(
+      paste(
+        cli::col_br_magenta(nrow(attr(obs, 'bad_obs'))),
+        "observations removed due to gross error check."
+      )
+    ))
+    print(attr(obs, "bad_obs"), n = Inf)
+    cat("\n")
+  }
+
   # Join the observations to the cases
   common_cols <- intersect(colnames(fcst_cases), colnames(obs))
   obs <- harpCore::deharp(dplyr::inner_join(fcst_cases, obs, by = common_cols))
@@ -396,7 +427,7 @@ do_point_verif <- function(
   # ))
 
   cli::cli_inform(c(
-    "i" = "Reading forecast data for {cli::symbol$arrow_right}",
+    "i" = "Reading forecast data {cli::symbol$arrow_right}",
     ""
   ))
   # Read the forecasts
@@ -479,6 +510,12 @@ do_point_verif <- function(
   )
 
   no_data_test(fcst, "All observations failed check against forecasts.")
+
+  if (!is.null(attr(fcst, "removed_cases")) &&
+      nrow(attr(fcst, "removed_cases")) > 0) {
+    print(attr(fcst, "removed_cases"), n = Inf)
+    cat("\n")
+  }
 
   # Send removed cases to a log file?
 
@@ -565,6 +602,22 @@ do_point_verif <- function(
     "ens" = harpPoint::ens_verify
   )
 
+  # Non threshold scores need to be removed if there is a second pass
+  non_thresh_scores <- switch(
+    cls,
+    "det" = c("summary", "hexbin"),
+    "ens" = c(
+      "summary", "hexbin", "rank_hist", "crps", "crps_decomp", "verify_members"
+    )
+  )
+
+  non_thresh_list <- lapply(
+    non_thresh_scores,
+    function(x) ifelse(x == "verify_members", param_list$verif_members, TRUE)
+  )
+
+  names(non_thresh_list) <- non_thresh_scores
+
   # Get parameter and include_low, include_high in the right form
   comps <- check_comparator(
     param_list[
@@ -585,19 +638,22 @@ do_point_verif <- function(
 
   verif <- lapply(
     idx,
-    function(i) verif_func(
-      fcst,
-      {{param_name}},
-      comparator     = comps$comparator[i],
-      include_low    = comps$include_low[i],
-      include_high   = comps$include_high[i],
-      thresholds     = thresholds[[i]],
-      groupings      = grps,
-      summary        = i == 1,
-      hexbin         = i == 1,
-      circle         = param_list$verif_circle,
-      verify_members = param_list$verif_members,
-      show_progress  = show_progress
+    function(i) do.call(
+      verif_func,
+      c(
+        list(
+          .fcst          = fcst,
+          parameter      = param_name,
+          comparator     = comps$comparator[i],
+          include_low    = comps$include_low[i],
+          include_high   = comps$include_high[i],
+          thresholds     = thresholds[[i]],
+          groupings      = grps,
+          circle         = param_list$verif_circle,
+          show_progress  = show_progress
+        ),
+        lapply(non_thresh_list, function(x) x && i == 1)
+      )
     )
   )
 

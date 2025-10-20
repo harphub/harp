@@ -5,12 +5,14 @@
 \alias{edit_config}
 \title{Verification configuration files}
 \usage{
-make_point_verif_config(config_file_name)
+make_point_verif_config(config_file_name, edit = TRUE)
 
 edit_config(config_file_name)
 }
 \arguments{
 \item{config_file_name}{The name of the configuration file to be made}
+
+\item{edit}{Logical. Whether to open the file in an editor.}
 }
 \description{
 These functions help you to make, edit and read configuration files for

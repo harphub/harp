@@ -29,3 +29,5 @@ Suggests:
     rstudioapi
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2
+Imports: 
+    docopt
