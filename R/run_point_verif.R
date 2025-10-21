@@ -371,7 +371,7 @@ do_point_verif <- function(
     dttm                = harpCore::unique_valid_dttm(fcst_cases),
     parameter           = obs_prm,
     stations            = harpCore::unique_stations(fcst_cases),
-    obs_path            = obs_data_dir,
+    file_path           = obs_data_dir,
     min_allowed         = param_list$obs_min,
     max_allowed         = param_list$obs_max,
     vertical_coordinate = vc
