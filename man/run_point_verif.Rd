@@ -11,6 +11,7 @@ run_point_verif(
   params = NULL,
   lead_time = seq(0, 48, 3),
   members = NULL,
+  cntrl_fcst_model = NULL,
   lags = "0s",
   stations = NULL,
   station_groups = NULL,
@@ -61,6 +62,16 @@ e.g. \cr \code{members = list(eps_model1 = seq(0, 3), eps_model2 = c(2,
 contain another named list with sub model name followed by the desired
 members, e.g. \cr \code{members = list(eps_model1 = list(sub_model1 =
   seq(0, 3), sub_model2 = c(2, 3)))}}
+
+\item{cntrl_fcst_model}{If you want to add a control member to an ensemble
+from another fcst_model, set the name of that fcst_model here. It will
+inherit fcst_path, fcst_template and fcst_format from those arguments, and
+will by defaul select member 0 (or set a deterministic to member 0). To
+override, pass a named list with names "name" for the name of the run the
+control member comes from, and optionally "fcst_path", "fcst_template" and
+"fcst_format". Use "member" to select a member from an ensemble other than
+0, and "cntrl_member" to give the control a new member number so that it
+doesn't clash with existing ensemble member numbers.}
 
 \item{lags}{The lags that were used when the forecast was run. If, for
 example, the FCTABLE files are constructed from lagged model runs the lags

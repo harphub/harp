@@ -24,6 +24,15 @@
 #' @param params The parameters from `param_defs` for which to do the
 #'   verification. Set to `NULL` (the default) to use all parameters in
 #'   `param_defs`.
+#' @param cntrl_fcst_model If you want to add a control member to an ensemble
+#'   from another fcst_model, set the name of that fcst_model here. It will
+#'   inherit fcst_path, fcst_template and fcst_format from those arguments, and
+#'   will by defaul select member 0 (or set a deterministic to member 0). To
+#'   override, pass a named list with names "name" for the name of the run the
+#'   control member comes from, and optionally "fcst_path", "fcst_template" and
+#'   "fcst_format". Use "member" to select a member from an ensemble other than
+#'   0, and "cntrl_member" to give the control a new member number so that it
+#'   doesn't clash with existing ensemble member numbers.
 #' @param station_groups A data frame defining groups each station belongs to.
 #'   Should have column names "SID" for station ID and "station_group" for the
 #'   group name.
@@ -88,6 +97,7 @@ run_point_verif <- function(
   params               = NULL,
   lead_time            = seq(0, 48, 3),
   members              = NULL,
+  cntrl_fcst_model     = NULL,
   lags                 = "0s",
   stations             = NULL,
   station_groups       = NULL,
@@ -143,6 +153,8 @@ run_point_verif <- function(
     }
   }
 
+  cntrl_fcst_model <- handle_cntrl_fcst_model(cntrl_fcst_model)
+
   ## ALWAYS use map... if return_data = FALSE return "SUCCESS" if no errors,
   # otherwise the error will be returned.
 
@@ -155,6 +167,7 @@ run_point_verif <- function(
       dttm,
       lead_time,
       members,
+      cntrl_fcst_model,
       lags,
       stations,
       station_groups,
@@ -245,6 +258,7 @@ do_point_verif <- function(
   dttm,
   ld_times,
   members,
+  cntrl_fcst_model,
   lags,
   stations,
   station_groups,
@@ -332,9 +346,47 @@ do_point_verif <- function(
     stations            = stations,
     file_path           = fc_data_dir,
     file_template       = fc_file_template,
+    file_format         = fc_file_format,
     vertical_coordinate = vc,
     meta_only           = TRUE
   )
+
+  if (!is.null(cntrl_fcst_model)) {
+    if (is.null(cntrl_fcst_model$file_path)) {
+      cntrl_fcst_model$file_path <- fc_data_dir
+    }
+    if (is.null(cntrl_fcst_model$file_template)) {
+      cntrl_fcst_model$file_template <- fc_file_template
+    }
+    if (is.null(cntrl_fcst_model$file_format)) {
+      cntrl_fcst_model$file_format <- fc_file_format
+    }
+    if (is.null(cntrl_fcst_model$member)) {
+      cntrl_fcst_model$member <- 0
+    }
+    if (is.null(cntrl_fcst_model$cntrl_member)) {
+      cntrl_fcst_model$cntrl_member <- cntrl_fcst_model$member
+    }
+    if (!harpCore::is_harp_list(fcst_cases)) {
+      fcst_cases        <- list(fcst_cases)
+      names(fcst_cases) <- fc_models
+      fcst_cases        <- harpCore::as_harp_list(fcst_cases)
+    }
+    fcst_cases[[cntrl_fcst_model$name]] <- harpIO::read_point_forecast(
+      dttm                = dttm,
+      fcst_model          = cntrl_fcst_model$name,
+      parameter           = fc_prm,
+      lead_time           = ld_times,
+      members             = cntrl_fcst_model$member,
+      lags                = lags,
+      stations            = stations,
+      file_path           = cntrl_fcst_model$file_path,
+      file_template       = cntrl_fcst_model$file_template,
+      file_format         = cntrl_fcst_model$file_format,
+      vertical_coordinate = vc,
+      meta_only           = TRUE
+    )
+  }
 
   if (is.na(vc)) {
     fcst_cases <- harpCore::common_cases(
@@ -372,6 +424,8 @@ do_point_verif <- function(
     parameter           = obs_prm,
     stations            = harpCore::unique_stations(fcst_cases),
     file_path           = obs_data_dir,
+    file_template       = obs_file_template,
+    file_format         = obs_file_format,
     min_allowed         = param_list$obs_min,
     max_allowed         = param_list$obs_max,
     vertical_coordinate = vc
@@ -442,8 +496,93 @@ do_point_verif <- function(
     stations            = harpCore::unique_stations(obs),
     file_path           = fc_data_dir,
     file_template       = fc_file_template,
+    file_format         = fc_file_format,
     vertical_coordinate = vc
   )
+
+  if (!is.null(cntrl_fcst_model)) {
+    cntrl_fcst <- harpIO::read_point_forecast(
+      dttm                = harpCore::unique_fcst_dttm(obs),
+      fcst_model          = cntrl_fcst_model$name,
+      parameter           = fc_prm,
+      lead_time           = ld_times,
+      members             = cntrl_fcst_model$member,
+      lags                = lags,
+      stations            = harpCore::unique_stations(obs),
+      file_path           = cntrl_fcst_model$file_path,
+      file_template       = cntrl_fcst_model$file_template,
+      file_format         = cntrl_fcst_model$file_format,
+      vertical_coordinate = vc
+    )
+
+    cntrl_col <- paste0(
+      cntrl_fcst_model$name, "_mbr",
+      formatC(cntrl_fcst_model$cntrl_member, width = 3, flag = "0")
+    )
+
+    colnames(cntrl_fcst) <- sub(
+      paste0(
+        cntrl_fcst_model$name, "_mbr",
+        formatC(cntrl_fcst_model$member, width = 3, flag = "0")
+      ),
+      cntrl_col,
+      colnames(cntrl_fcst)
+    )
+
+    fcst_members <- harpCore::member_colnames(fcst)
+    if (is.list(fcst_members)) {
+      fcst_members <- Reduce(union, fcst_members)
+    }
+    fcst_members <- gsub(
+      "[[:graph:]]+(?=_mbr[[:digit:]]{3})", "", fcst_members, perl = TRUE
+    )
+    fcst_members <- unique(harpCore::extract_numeric(fcst_members))
+    if (is.element(cntrl_fcst_model$cntrl_member, fcst_members)) {
+      cli::cli_abort(c(
+        paste(
+          "Added control member, {cntrl_fcst_model$cntrl_member},",
+          "is a member number in existing ensemble."
+        ),
+        "x" = paste(
+          "Ensemble includes members {fcst_members} and added control",
+          "is member {cntrl_fcst_model$cntrl_member}."
+        ),
+        "i" = paste(
+          "Use name \"cntrl_member\" in {.arg cntrl_fcst_model} list to apply",
+          "a unique member number for the added control."
+        )
+      ))
+    }
+
+    if (harpCore::is_harp_list(fcst)) {
+      fcst <- harpCore::as_harp_list(purrr::imap(
+        fcst,
+        function(f, n) {
+          harpCore::join_to_fcst(
+            f,
+            dplyr::rename_with(
+              dplyr::select(
+                cntrl_fcst, -dplyr::any_of(c("fcst_model", "model_elevation"))
+              ),
+              ~sub(cntrl_fcst_model$name, n, .x),
+              cntrl_col
+            )
+          )
+        }
+      ))
+    } else {
+      fcst <- harpCore::join_to_fcst(
+        fcst,
+        dplyr::rename_with(
+          dplyr::select(
+            cntrl_fcst, -dplyr::any_of(c("fcst_model", "model_elevation"))
+          ),
+          ~sub(cntrl_fcst_model$name, fc_models, .x),
+          cntrl_col
+        )
+      )
+    }
+  }
 
   no_data_test(fcst, "None of the requested forecast data found in file(s).")
 
@@ -690,6 +829,35 @@ do_point_verif <- function(
 ################################################################################
 ################################################################################
 
+handle_cntrl_fcst_model <- function(cntrl_fcst_model) {
+  if (!is.null(cntrl_fcst_model)) {
+    if (!is.list(cntrl_fcst_model)) { # Just the name of the model - must be length 1
+      if (length(cntrl_fcst_model) > 1) {
+        cli::cli_abort(c(
+          "Invalid value for {.arg cntrl_fcst_model}",
+          "i" = "If {.arg cntrl_fcst_model} is not a list, it must be length 1.",
+          "x" = "You supplied {cntrl_fcst_model}."
+        ))
+      }
+      cntrl_fcst_model <- list(name = cntrl_fcst_model)
+    }
+    if (length(cntrl_fcst_model) == 1) {
+      if (is.null(names(cntrl_fcst_model))) {
+        names(cntrl_fcst_model) <- "name"
+      }
+    }
+    if (!is.element("name", names(cntrl_fcst_model))) {
+      cli::cli_abort(c(
+        "{.arg cntrl_fcst_model} does not include an element \"name\"",
+        "i" = paste(
+          "{.arg cntrl_fcst_model} shoulb a named list including \"name\"",
+          "or a character string."
+        )
+      ))
+    }
+  }
+  cntrl_fcst_model
+}
 # Check what the classes of the data frames in a harp_list are
 is_det <- function(cls) {
   any(grepl("harp_det_", cls))
