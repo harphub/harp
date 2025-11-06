@@ -82,6 +82,10 @@
 #'   \code{\link{make_verif_defaults}()}. These defaults currently only cover
 #'   verification groups and the number of standard deviations to use in the
 #'   observation error checking.
+#' @param fix_fcst_model_name Logical. If `fcst_model` doesn't match the model
+#'   name in the data, this argument determines whether the name in the data
+#'   should be updated to match `fcst_model`. Default is `TRUE`. Note that this
+#'   currently only works for single model ensembles.
 #' @param return_data Logical. Whether to return the verification results to the
 #'   global environment. Automatically set to TRUE if `out_path` is `NULL`.
 #'
@@ -116,6 +120,7 @@ run_point_verif <- function(
   out_template         = "point_verif",
   out_format           = "rds",   # make extendable to include json
   defaults             = make_verif_defaults(),
+  fix_fcst_model_name  = TRUE,
   show_progress        = TRUE,
   return_data          = TRUE
 ) {
@@ -186,6 +191,7 @@ run_point_verif <- function(
       out_path,
       out_template,
       out_format,
+      fix_fcst_model_name,
       show_progress,
       return_data
     ))
@@ -277,6 +283,7 @@ do_point_verif <- function(
   vrf_data_dir,
   vrf_file_template,
   vrf_file_format,
+  fix_fcst_model_name,
   show_progress,
   return_data
 ) {
@@ -499,6 +506,21 @@ do_point_verif <- function(
     file_format         = fc_file_format,
     vertical_coordinate = vc
   )
+
+  # If the fcst_model doesn't match what's in the member column names, update
+  # it! This won't work for multi model ensembles.
+
+  if (fix_fcst_model_name && harpCore::is_harp_list(fcst)) {
+    fcst <- harpCore::as_harp_list(
+      mapply(
+        function(fc, fc_model) update_fcst_model_name(fc, fc_model),
+        fcst, fc_models,
+        SIMPLIFY = FALSE
+      )
+    )
+  } else {
+    fcst <- update_fcst_model_name(fcst, fc_models)
+  }
 
   if (!is.null(cntrl_fcst_model)) {
     cntrl_fcst <- harpIO::read_point_forecast(
@@ -858,6 +880,32 @@ handle_cntrl_fcst_model <- function(cntrl_fcst_model) {
   }
   cntrl_fcst_model
 }
+
+# Update the name of a fcst_model for ensembles
+update_fcst_model_name <- function(x, fc_model) {
+  if (is_ens(class(x))) {
+    ens_name <- unique(
+      regmatches(
+        colnames(x),
+        regexpr(
+          "[[:graph:]]+(?=_mbr[[:digit:]]{3})",
+          colnames(x),
+          perl = TRUE
+        )
+      )
+    )
+    if (length(ens_name) == 1 && ens_name != fc_model) {
+      colnames(x) <- gsub(
+        paste0(ens_name, "(?=_mbr[[:digit:]]{3})"),
+        fc_model,
+        colnames(x),
+        perl = TRUE
+      )
+    }
+  }
+  x
+}
+
 # Check what the classes of the data frames in a harp_list are
 is_det <- function(cls) {
   any(grepl("harp_det_", cls))

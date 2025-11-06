@@ -30,6 +30,7 @@ run_point_verif(
   out_template = "point_verif",
   out_format = "rds",
   defaults = make_verif_defaults(),
+  fix_fcst_model_name = TRUE,
   show_progress = TRUE,
   return_data = TRUE
 )
@@ -146,6 +147,11 @@ include SQLite and JSON.}
 \code{\link{make_verif_defaults}()}. These defaults currently only cover
 verification groups and the number of standard deviations to use in the
 observation error checking.}
+
+\item{fix_fcst_model_name}{Logical. If `fcst_model` doesn't match the model
+name in the data, this argument determines whether the name in the data
+should be updated to match `fcst_model`. Default is `TRUE`. Note that this
+currently only works for single model ensembles.}
 
 \item{return_data}{Logical. Whether to return the verification results to the
 global environment. Automatically set to TRUE if `out_path` is `NULL`.}
