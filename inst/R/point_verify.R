@@ -170,7 +170,9 @@ if (is.null(config$lags)) {
   config$lags <- "0s"
 }
 
-config$out_path <- file.path(config$out_path, args$out_subdir)
+if (!is.null(args$out_subdir)) {
+  config$out_path <- file.path(config$out_path, args$out_subdir)
+}
 
 do.call(
   harp::run_point_verif,
