@@ -1,0 +1,111 @@
+How to run a point verification
+===============================
+
+1. Prerequisites
+----------------
+
+- You need a harp version >= 0.3
+- RScript should be available
+- Point data have already been prepared in SQLite or Parquet files
+  - harpIO functions read_forecast() and read_obs() will do this job
+
+2. Getting Started
+------------------
+
+- Start an R session
+  If you haven't already installed harp do the following:
+
+  > install.packages("remotes")
+  > remotes::install_github("harphub/harp")
+
+  This will likely take some time! It is recommended that you have a Github
+  Personal Access Token (PAT) - see more information here:
+
+- Once harp is installed you can attach the package
+
+  > library(harp)
+
+- Now initiate a new point verification project
+
+  > new_point_point_verif_project("<dir>")
+
+    - <dir> is the directory where you want to install the project. If you are
+      using renv, this should be the same directory where your harp renv project
+      is installed. Otherwise it is recommended to start with a new directory.
+
+    - new_point_verif_project() will place the following files in <dir>
+      - README (You're reading this now!)
+      - harp_point_verif_params.R : Defines the parameters to be verified
+      - harp_point_verif_conf.txt : Configuration of your verification
+      - harp_point_verify.R : The script that runs the verfication
+
+    - You will be asked if you want to open the files for editing. If you answer
+      yes, harp_point_verif_params.R and harp_verif_config.txt will be opened
+      in your default editor.
+
+3. Preparing a verification
+---------------------------
+
+To prepare a verification, you probably need to edit harp_point_verif_params.R
+and harp_point_verif_config.txt.
+
+  - harp_point_verif_params.R
+
+    - This file is an R Script that makes use of the function make_verif_param()
+      to provide definitions for each parameter in the verification, such as
+
+      - The name of the parameter
+      - The name of the parameter in forecast and observation files
+      - Scaling, using the function make_scaling(), to be applied to forecasts
+        and observations of the parameter
+      - Bounds for error checks
+      - The vertical co-ordinate of upper air parameters
+      - Thersholds and comparators for threshold / categorical scores
+      - Special verification groupings, using make_verif_groups(), that are
+        not the default
+      - Whether to use circular statistics (e.g. for wind direction)
+
+    - Additionally default groupings, to apply to all parameters are defined
+      using make_verif_defaults
+
+  - harp_point_verif_conf.txt
+
+    - This file is a text file that sets local configurations, such as paths,
+      lead times to verify, extra files (e.g. station lists). These are all
+      arguments that are eventually sent to run_point_verif(), so you can see
+      the documentation for that function for more information.
+
+4. Running a verification
+-------------------------
+
+The verifcation is run by the script harp_point_verify.R. You should not make
+any changes to the code in this script. It is designed to be run by Rscript,
+from a shell - this means that you shouldn't be in an R session!
+
+  Usage:
+
+    Rscript harp_point_verify.R <fcst_model> [options]
+
+    fcst_model: A comma separated string of the names of the forecast models to
+                include in the verification
+
+  Options:
+
+    -h             : Show the help
+    -v             : Show the version of harp_point_verify.R
+    -s START_DTTM  : The start date-time string in YYYYMMDD[hh][mm][ss]
+    -e END_DTTM    : The end date-time string in YYYYMMDD[hh][mm][ss]
+    -b BY          : The time between forecasts. Should be a number followed by
+                     either s, m, h or d for seconds, minutes, hours and days
+                     respectively. It is set to 1d if missing.
+    -l LEAD_TIME   : The lead times to verify. Should be a comma separted
+                     sequence of 3 numbers: start,end,by. Overrides what is set
+                     in the configuration file.
+    -c CONFIG_FILE : The path to the configuration file.
+    -o OUT_SUBDIR  : The subdirectory for the output, under what is set in the
+                     configuration file
+    -m MAIN_MODEL  : The model to be considered as the main forecast mdoel.
+
+The verifcation should run, updating you with information about what is
+happening. Note that progress bars are switched off since this way of running
+point verification is most suited to batch jobs that output to a log file.

@@ -135,7 +135,7 @@ new_point_verif_project <- function(
     system.file("R/point_verify.R", package = "harp"), file.path(dir, script_file)
   )
   file.copy(
-    system.file("doc/README", package = "harp"), file.path(dir, "README")
+    system.file("run-doc/README", package = "harp"), file.path(dir, "README")
   )
   cat("Do you want to open project files for editing?\n")
   continue(FALSE)

@@ -20,6 +20,8 @@ run_point_verif(
   dttm_rounding = NULL,
   dttm_rounding_dirn = c("nearest", "up", "down"),
   dttm_rounding_offset = 0,
+  dttm_pluck_freq = NULL,
+  dttm_pluck_offset = NULL,
   fcst_path = getwd(),
   fcst_template = "fctable",
   fcst_format = "fctable",
@@ -119,6 +121,14 @@ it to be centred on 12 UTC, you would supply an offset of "12h". Note that
 the offset is applied backwards in time, so if you want to centre on 06
 UTC, for example, the offset should be "18h".}
 
+\item{dttm_pluck_freq, dttm_pluck_offset}{If verification is grouped by valid
+date-time, select only date times at a frequency set by \code{dttm_pluck_freq}.
+The frequency is relative to 00 UTC, so use \code{dttm_freq_offset} to change
+the reference time. For example, to get 12 UTC once a day, set
+\code{dttm_pluck_freq = "1d"} and \code{dttm_pluck_offset = "12h"}. Should be a value
+that can be interpreted by \code{\link[harpCore]{to_seconds}}. Only applies
+if one of \code{groupings} is \code{"valid_dttm"}.}
+
 \item{fcst_path}{The path for the forecast files.}
 
 \item{fcst_template}{The template for the forecast files.}
@@ -152,6 +162,9 @@ observation error checking.}
 name in the data, this argument determines whether the name in the data
 should be updated to match `fcst_model`. Default is `TRUE`. Note that this
 currently only works for single model ensembles.}
+
+\item{show_progress}{Logical - whether to show progress bars. Defaults to
+\code{TRUE}.}
 
 \item{return_data}{Logical. Whether to return the verification results to the
 global environment. Automatically set to TRUE if `out_path` is `NULL`.}

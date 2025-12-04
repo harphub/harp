@@ -16,6 +16,9 @@ dttm_rounding        = NULL
 dttm_rounding_dirn   = nearest
 dttm_rounding_offset = 0
 
+dttm_pluck_freq      = NULL
+dttm_pluck_offset    = NULL
+
 members              = NULL
 lags                 = NULL
 ens_mean_as_det      = FALSE

@@ -18,6 +18,8 @@
 #' used passing data created with \code{\link{make_verif_defaults}}.
 #'
 #' @inheritParams harpIO::read_point_forecast
+#' @inheritParams harpPoint::ens_verify
+
 #'
 #' @param param_defs The parameter definitions to be used in the verification.
 #'   These need to be set using \code{\link{make_verif_params}()}.
@@ -110,6 +112,8 @@ run_point_verif <- function(
   dttm_rounding        = NULL,
   dttm_rounding_dirn   = c("nearest", "up", "down"),
   dttm_rounding_offset = 0,
+  dttm_pluck_freq      = NULL,
+  dttm_pluck_offset    = NULL,
   fcst_path            = getwd(),
   fcst_template        = "fctable",
   fcst_format          = "fctable",
@@ -181,6 +185,8 @@ run_point_verif <- function(
       dttm_rounding,
       dttm_rounding_dirn,
       dttm_rounding_offset,
+      dttm_pluck_freq,
+      dttm_pluck_offset,
       fcst_path,
       fcst_template,
       fcst_format,
@@ -273,6 +279,8 @@ do_point_verif <- function(
   dttm_rounding,
   dttm_rounding_dirn,
   dttm_rounding_offset,
+  dttm_pluck_freq,
+  dttm_pluck_offset,
   fc_data_dir,
   fc_file_template,
   fc_file_format,
@@ -803,15 +811,17 @@ do_point_verif <- function(
       verif_func,
       c(
         list(
-          .fcst          = fcst,
-          parameter      = param_name,
-          comparator     = comps$comparator[i],
-          include_low    = comps$include_low[i],
-          include_high   = comps$include_high[i],
-          thresholds     = thresholds[[i]],
-          groupings      = grps,
-          circle         = param_list$verif_circle,
-          show_progress  = show_progress
+          .fcst             = fcst,
+          parameter         = param_name,
+          comparator        = comps$comparator[i],
+          include_low       = comps$include_low[i],
+          include_high      = comps$include_high[i],
+          thresholds        = thresholds[[i]],
+          groupings         = grps,
+          circle            = param_list$verif_circle,
+          dttm_pluck_freq   = dttm_pluck_freq,
+          dttm_pluck_offset = dttm_pluck_offset,
+          show_progress     = show_progress
         ),
         lapply(non_thresh_list, function(x) x && i == 1)
       )
