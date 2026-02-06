@@ -720,8 +720,21 @@ do_point_verif <- function(
     grps <- do.call(harpCore::make_verif_groups, grps)
   }
 
+  map_grps <- param_list$verif_map_groups
+  if (is.null(map_grps)) {
+    map_grps <- dflts$verif_map_groups
+  }
+
+  if (
+    is.list(map_grps) &&
+      !is.null(names(map_grps)) &&
+      sort(names(map_grps)) == c("groups", "time_groups")
+  ) {
+    map_grps <- do.call(harpCore::make_verif_groups, map_grps)
+  }
+
   # Make modifications to data depending on groups
-  grp_names <- unique(unlist(grps))
+  grp_names <- unique(union(unlist(grps), unlist(map_grps)))
 
   if (any(grepl("valid_hour|valid_day|valid_month|valid_year", grp_names))) {
     fcst <- harpCore::expand_date(fcst, "valid_dttm")
@@ -747,9 +760,16 @@ do_point_verif <- function(
 
   if (!is.na(vc)) {
     if (is.list(grps)) {
-      grps <- lapply(grps, function(x) c(x, vertical_col))
+      grps <- lapply(grps, function(x) union(x, vertical_col))
     } else {
-      grps <- c(grps, vertical_col)
+      grps <- union(grps, vertical_col)
+    }
+    if (!is.null(map_grps)) {
+      if (is.list(map_grps)) {
+        map_grps <- lapply(map_grps, function(x) union(x, vertical_col))
+      } else {
+        map_grps <- union(map_grps, vertical_col)
+      }
     }
   }
 
@@ -780,9 +800,19 @@ do_point_verif <- function(
     )
   )
 
+  # Do we verify the members
+  verif_members <- param_list$verif_members
+  if (is.null(verif_members)) {
+    verif_members <- dflts$verif_members
+  }
+
   non_thresh_list <- lapply(
     non_thresh_scores,
-    function(x) ifelse(x == "verify_members", param_list$verif_members, TRUE)
+    function(x) if (x == "verify_members") {
+      verif_members
+    } else {
+      c(TRUE, x == "summary" && !is.null(map_grps))
+    }
   )
 
   names(non_thresh_list) <- non_thresh_scores
@@ -818,12 +848,16 @@ do_point_verif <- function(
           include_high      = comps$include_high[i],
           thresholds        = thresholds[[i]],
           groupings         = grps,
+          map_groupings     = map_grps,
           circle            = param_list$verif_circle,
           dttm_pluck_freq   = dttm_pluck_freq,
           dttm_pluck_offset = dttm_pluck_offset,
           show_progress     = show_progress
         ),
-        lapply(non_thresh_list, function(x) x && i == 1)
+        lapply(
+          non_thresh_list,
+          function(x) vapply(x, function(y) y && i == 1, logical(1))
+        )
       )
     )
   )

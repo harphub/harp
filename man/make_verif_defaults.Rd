@@ -4,14 +4,28 @@
 \alias{make_verif_defaults}
 \title{Make defualts for point verification}
 \usage{
-make_verif_defaults(verif_groups = "lead_time", obs_error_sd = NULL)
+make_verif_defaults(
+  verif_groups = "lead_time",
+  verif_map_groups = list("SID", "valid_hour"),
+  verif_members = TRUE,
+  obs_error_sd = NULL
+)
 }
 \arguments{
 \item{verif_groups}{The groups for which to compute verification scores. That
 is to say the stratification of the verification scores.
-\code{\link[harpCore]{make_verif_groups}()} can be used to define the
+\code{\link{make_verif_groups}()} can be used to define the
 verification groups. The default is for the verification to be grouped by
 lead time.}
+
+\item{verif_map_groups}{The groups for which to compute scores for plotting
+on a map. Set to "SID" to switch on, otherwise as `verif_groups` except
+"SID", "lon" and "lat" will automatically be added to the groups. The
+default is for stations for all times, and stations stratified by valid
+hour.}
+
+\item{verif_members}{Whether to verify the members individually as
+deterministic forecasts for ensemble forecasts. Defaults to TRUE.}
 
 \item{obs_error_sd}{The maximum number of standard deviations that an
 observation can be different from a forecast. Used as a sort of

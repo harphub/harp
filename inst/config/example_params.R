@@ -199,8 +199,9 @@ params <- c(
 )
 
 defaults <- make_verif_defaults(
-  make_verif_groups(
+  verif_groups = make_verif_groups(
     c("lead_time", "valid_dttm", "valid_hour"),
     c("fcst_cycle", "station_group")
-  )
+  ),
+  verif_map_groups = list("SID", "valid_hour")
 )

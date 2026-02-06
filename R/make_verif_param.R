@@ -29,9 +29,11 @@
 #'   \code{\link[harpPoint]{check_obs_against_fcst}()} for more details.
 #' @param verif_groups The groups for which to compute verification scores. That
 #'   is to say the stratification of the verification scores.
-#'   \code{\link[harpCore]{make_verif_groups}()} can be used to define the
-#'   verification groups. The default is for the verification to be grouped by
-#'   lead time.
+#'   \code{\link{make_verif_groups}()} can be used to define the
+#'   verification groups.
+#' @param verif_map_groups The groups for which to compute scores for plotting
+#'    on a map. Set to "SID" to switch on, otherwise as `verif_groups` except
+#'    "SID", "lon" and "lat" will automatically be added to the groups.
 #' @param verif_thresholds The thresholds to be used for computing contingency
 #'   table based and probabilistic scores for the parameter. If different
 #'   thresholds are to be used with different comparators, `thresholds` should
@@ -46,7 +48,8 @@
 #'   around the circle in the units of the parameter. So, for degrees this would
 #'   be `360` and radians `2 * pi`.
 #' @param verif_members Whether to verify the members individually as
-#'   deterministic forecasts for ensemble forecasts.
+#'   deterministic forecasts for ensemble forecasts. Defaults to NULL at the
+#'   parameter level, meaning that what is set in defaults is used.
 #' @param vertical_coordinate For upper air parameters, the coordinate system
 #'   used in the vertical. Can be `"pressure"`, `"height"`, or `"model"`.
 #'
@@ -110,12 +113,13 @@ make_verif_param <- function(
   obs_max             = NULL,
   obs_error_sd        = NULL,
   verif_groups        = NULL,
+  verif_map_groups    = NULL,
   verif_thresholds    = NULL,
   verif_comparator    = "ge",
   verif_comp_inc_low  = TRUE,
   verif_comp_inc_high = TRUE,
   verif_circle        = NULL,
-  verif_members       = TRUE,
+  verif_members       = NULL,
   vertical_coordinate = NA_character_
 ) {
   out <- list()
@@ -129,6 +133,7 @@ make_verif_param <- function(
     obs_max             = obs_max,
     obs_error_sd        = obs_error_sd,
     verif_groups        = verif_groups,
+    verif_map_groups    = verif_map_groups,
     verif_comparator    = verif_comparator,
     verif_comp_inc_low  = verif_comp_inc_low,
     verif_comp_inc_high = verif_comp_inc_high,
@@ -161,12 +166,31 @@ c.harp_verif_param <- function(...) {
 #' \code{\link{make_verif_param()}}
 #'
 #' @inheritParams make_verif_param
+#' @param verif_groups The groups for which to compute verification scores. That
+#'   is to say the stratification of the verification scores.
+#'   \code{\link{make_verif_groups}()} can be used to define the
+#'   verification groups. The default is for the verification to be grouped by
+#'   lead time.
+#' @param verif_map_groups The groups for which to compute scores for plotting
+#'    on a map. Set to "SID" to switch on, otherwise as `verif_groups` except
+#'    "SID", "lon" and "lat" will automatically be added to the groups. The
+#'    default is for stations for all times, and stations stratified by valid
+#'    hour.
+#' @param verif_members Whether to verify the members individually as
+#'   deterministic forecasts for ensemble forecasts. Defaults to TRUE.
 #' @export
 make_verif_defaults <- function(
-  verif_groups = "lead_time",
-  obs_error_sd = NULL
+  verif_groups     = "lead_time",
+  verif_map_groups = list("SID", "valid_hour"),
+  verif_members    = TRUE,
+  obs_error_sd     = NULL
 ) {
-  out <- list(verif_groups = verif_groups, obs_error_sd = obs_error_sd)
+  out <- list(
+    verif_groups     = verif_groups,
+    verif_map_groups = verif_map_groups,
+    verif_members    = verif_members,
+    obs_error_sd     = obs_error_sd
+  )
   class(out) <- c("harp_verif_defaults", class(out))
   out
 }
